@@ -15,7 +15,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import plotly.express as px
 from sklearn import preprocessing
-import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
@@ -24,13 +23,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 
-# Commented out IPython magic to ensure Python compatibility.
-from google.colab import drive
-drive.mount("/content/drive")
-# %cd /content/drive/My Drive/Machine Learning/
+# # Commented out IPython magic to ensure Python compatibility.
+# from google.colab import drive
+# drive.mount("/content/drive")
+# # %cd /content/drive/My Drive/Machine Learning/
 
 # Load the data
-path = 'breast-cancer-diagnostic.shuf.lrn.csv'
+path = './Datasets/breast-cancer-diagnostic.shuf.lrn.csv'
 dirPath = pathlib.Path(path)
 df=pd.read_csv(dirPath)
 print(df.head())
@@ -52,7 +51,7 @@ df_x_scaled = pd.DataFrame(x_scaled)
 print(df_x_scaled)
 
 # Import test-data and scaling the data
-pathTest = 'breast-cancer-diagnostic.shuf.tes.csv'
+pathTest = './Datasets/breast-cancer-diagnostic.shuf.tes.csv'
 dirPathTest = pathlib.Path(pathTest)
 df_test=pd.read_csv(dirPathTest)
 
@@ -106,7 +105,7 @@ def predict_random_forrest(x_test, x_train, y_train, k_min=10, k_max=100):
         all_predictions.append(prediction)
     return all_predictions
 
-def predict_qda(t_test, x_train, y_train):
+def predict_qda(x_test, x_train, y_train):
     all_predictions = []
     qda = QuadraticDiscriminantAnalysis()
     qda.fit(x_train, y_train)
