@@ -101,67 +101,61 @@ print(df.head())
 X = df.iloc[:, 1:-1]  # Remove the ID and Class columns
 Y = df.iloc[:, -1]
 
-x = X.values # returns a numpy array
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(x)
-#scaler = preprocessing.StandardScaler()
-#x_scaled = scaler.fit_transform(x)
-df_x_scaled = pd.DataFrame(x_scaled)
+# x = X.values # returns a numpy array
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(x)
+# #scaler = preprocessing.StandardScaler()
+# #x_scaled = scaler.fit_transform(x)
+df_x_scaled = pd.DataFrame(X)
 print(df_x_scaled)
 
 #################################################################
 # ON TEST DATA
 test_data = pd.read_csv("Datasets/purchase600-100cls-15k.tes.csv", encoding="ISO-8859-1")
-df_test = pd.DataFrame(x_scaled)
-test_x = test_data.iloc[:, 1:]  # Remove the ID column
+df_test = pd.DataFrame(test_data)
+test_x = df_test.iloc[:, 1:]  # Remove the ID column
+df_test_normalized = test_x
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(test_x)
-df_test_normalized = pd.DataFrame(x_scaled)
-covariance = df_test_normalized.cov()
-print(covariance[covariance>0.5])
-for x,y in covariance.iterrows():
-    print(x)
-    print(y[y>0.5])
+print("df_test_normalized: " , df_test_normalized)
 
 # Training the different algorithms
 X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=0.20, random_state=35)
 
-# KNN
-all_predictions = predict_knn(X_test, X_train, Y_train, 1, 10)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING KNN")
-max_value = max(results)
-max_index = results.index(max_value)
-print("Max value:", max_value)
-print("Max index:", max_index)
+# # KNN
+# all_predictions = predict_knn(X_test, X_train, Y_train, 1, 30)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING KNN")
+# max_value = max(results)
+# max_index = results.index(max_value)
+# print("Max value:", max_value)
+# print("Max index:", max_index)
 
-# RANDOM FORREST
-all_predictions = predict_random_forrest(X_test, X_train, Y_train, 1, 10)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING RANDOM FORREST")
-max_value = max(results)
-max_index = results.index(max_value)
-print("Max value:", max_value)
-print("Max index:", max_index)
-
-# LOGISTIC REGRESSION
-all_predictions = predict_logistic_regression(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING KNN")
-print(results)
-
-# LINEDAR DISCRIMINANT ANALYSIS
-#all_predictions = predict_lda(X_test, X_train, Y_train)
-#results = check_accuracy(Y_test, all_predictions)
-#print("\nTRAINING USING LDA")
-#print(results)
-
-# QUADRATIC DISCRIMINANT ANALYSIS
-all_predictions = predict_qda(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING QDA")
-print(results)
+# # RANDOM FORREST
+# all_predictions = predict_random_forrest(X_test, X_train, Y_train, 1, 100)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING RANDOM FORREST")
+# max_value = max(results)
+# max_index = results.index(max_value)
+# print("Max value:", max_value)
+# print("Max index:", max_index)
+#
+# # LOGISTIC REGRESSION
+# all_predictions = predict_logistic_regression(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING KNN")
+# print(results)
+#
+# # LINEDAR DISCRIMINANT ANALYSIS
+# #all_predictions = predict_lda(X_test, X_train, Y_train)
+# #results = check_accuracy(Y_test, all_predictions)
+# #print("\nTRAINING USING LDA")
+# #print(results)
+#
+# # QUADRATIC DISCRIMINANT ANALYSIS
+# all_predictions = predict_qda(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING QDA")
+# print(results)
 
 # SUPPORT VECTOR MACHINES
 all_predictions = predict_svm(X_test, X_train, Y_train)
@@ -169,34 +163,39 @@ results = check_accuracy(Y_test, all_predictions)
 print("\nTRAINING USING SVM")
 print(results)
 
-# NAIVE BAYES
-all_predictions = predict_naive_bayes(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING NAIVE BAYES")
-print(results)
+# # NAIVE BAYES
+# all_predictions = predict_naive_bayes(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING NAIVE BAYES")
+# print(results)
 
-# TEST FOR KAGGLE (KNN)
-knn = KNeighborsClassifier(n_neighbors=19,p=2)
-knn.fit(df_x_scaled, Y)
-prediction = knn.predict(df_test_normalized)
+# # TEST FOR KAGGLE (KNN)
+# knn = KNeighborsClassifier(n_neighbors=27,p=1)
+# knn.fit(df_x_scaled, Y)
+# prediction = knn.predict(df_test_normalized)
+#
+# data = {'ID': df_test.iloc[:, 0], 'class': prediction}
+# output = pd.DataFrame(data, columns=['class'], index=data['ID'])
+# print(output)
 
+# # TEST FOR KAGGLE (LR)
+# LR = LogisticRegression(random_state = 0)
+# LR.fit(df_x_scaled, Y)
+# prediction = LR.predict(df_test_normalized)
+#
+# data = {'ID': df_test.iloc[:, 0], 'class': prediction}
+# output = pd.DataFrame(data, columns=['class'], index=data['ID'])
+# print(output)
+
+# TEST FOR KAGGLE (SVM)
+svm = svm.SVC(kernel='poly', random_state=42)
+svm.fit(df_x_scaled, Y)
+prediction = svm.predict(df_test_normalized)
 data = {'ID': df_test.iloc[:, 0], 'class': prediction}
 output = pd.DataFrame(data, columns=['class'], index=data['ID'])
-print(output)
-
-# TEST FOR KAGGLE (LR)
-LR = LogisticRegression(random_state = 0)
-LR.fit(df_x_scaled, Y)
-prediction = LR.predict(df_test_normalized)
-
-data = {'ID': df_test.iloc[:, 0], 'class': prediction}
-output = pd.DataFrame(data, columns=['class'], index=data['ID'])
-print(output)
 
 # Save
-path = 'lr_breastcancer.csv'
+path = 'lr_purchase.csv'
 dirPath = pathlib.Path(path)
-output=output.to_csv(dirPath)
-data = {'ID': df_test.iloc[:, 0], 'class': prediction}
-output = pd.DataFrame(data, columns=['class'], index=data['ID'])
+output= output.to_csv(dirPath)
 print(output)
