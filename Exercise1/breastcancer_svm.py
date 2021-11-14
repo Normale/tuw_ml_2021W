@@ -83,18 +83,26 @@ def check_accuracy(y_test, predictions):
 
 r = []
 t = []
+runtime = []
+import timeit
+
 print("\nTRAINING USING SVM")
 for testSize in range(10,50,5):
     X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize/100, random_state=35)
 
     # SUPPORT VECTOR MACHINES
+    start = timeit.default_timer()
     all_predictions = predict_svm(X_test, X_train, Y_train)
+    stop = timeit.default_timer()
+    time = stop-start
+    print('Time: ', time)  
     results = check_accuracy(Y_test, all_predictions)
     print("\nTest size = ", testSize/100)
     print(results)
     testSize = testSize/100
     r.append(results)
     t.append(testSize)
+    runtime.append(time)
 
 best_testSize = t[r.index(np.max(r))]
 
@@ -104,6 +112,25 @@ fig.suptitle('SVM with different test sizes', fontsize=14)
 plt.xlabel('Test sie', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
+
+
+fig, ax1 = plt.subplots()
+
+color = 'tab:red'
+ax1.set_xlabel('Test size')
+ax1.set_ylabel('Accuracy', color=color)
+ax1.plot(t, r, color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+color = 'tab:blue'
+ax2.set_ylabel('runtime', color=color)  # we already handled the x-label with ax1
+ax2.plot(t, runtime, color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
 
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt

@@ -98,19 +98,28 @@ def check_accuracy(y_test, predictions):
 
 r = []
 idx = []
+runtime = []
+import timeit
+
 
 print("\nTRAINING USING KNN")
 for testSize in range(10,50,5):
     X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize/100, random_state=35)
 
     # KNN
+    start = timeit.default_timer()
     all_predictions = predict_knn(X_test, X_train, Y_train,1,25)
+    stop = timeit.default_timer()
+    time = stop-start
+    print('Time: ', time)  
     results, bestIdx = check_accuracy(Y_test, all_predictions)
     print("\nTest size = ", testSize/100)
     print(results)
     testSize = testSize/100
     bestResult = np.max(results)
     r.append(results)
+    runtime.append(time)
+
 
 bestOverallResult = np.max(r)
 df = pd.DataFrame(data=r)
@@ -123,6 +132,13 @@ fig.legend(["10","15","20","25","30","35","40","45"])
 #df.xlabel('Test sie', fontsize=14)
 #df.ylabel('Accuracy', fontsize=14)
 #print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
+
+x = range(10,50,5)
+fig = plt.figure()
+plt.scatter(x,runtime)
+fig.suptitle('Runtime', fontsize=14)
+plt.xlabel('Test size', fontsize=14)
+plt.ylabel('Run time', fontsize=14)
 
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
