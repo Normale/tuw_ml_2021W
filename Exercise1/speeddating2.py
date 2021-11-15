@@ -54,8 +54,8 @@ def predict_random_forrest(x_test, x_train, y_train, k_min=10, k_max=100):
     all_predictions = []
     grid_params = {
         'criterion': ["gini", "entropy"],
-        'max_depth': range(10,100,5),
-        'n_estimators': range(10,200,10)
+        'max_depth': range(10,100,20),
+        'n_estimators': range(10,200,30)
     }
     gs = GridSearchCV(
         RandomForestClassifier(),
@@ -147,44 +147,43 @@ X_test = test.iloc[:, 0:-1]  # Remove the ID and Class columns
 Y_test = test.iloc[:, -1]
 
 # KNN
-all_predictions = predict_knn(X_test, X_train, Y_train, 1, 30)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING KNN")
-max_value = max(results)
-max_index = results.index(max_value)
-print("Max value:", max_value)
-print("Max index:", max_index)
-print("Time knn:", time_knn)
+# all_predictions = predict_knn(X_test, X_train, Y_train, 1, 30)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING KNN")
+# max_value = max(results)
+# max_index = results.index(max_value)
+# print("Max value:", max_value)
+# print("Max index:", max_index)
+# # print("Time knn:", time_knn)
 
 
 # RANDOM FORREST
-all_predictions = predict_random_forrest(X_test, X_train, Y_train, 1, 100)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING RANDOM FORREST")
-max_value = max(results)
-max_index = results.index(max_value)
-print("Max value:", max_value)
-print("Max index:", max_index)
+# all_predictions = predict_random_forrest(X_test, X_train, Y_train, 1, 100)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING RANDOM FORREST")
+# max_value = max(results)
+# max_index = results.index(max_value)
+# print("Max value:", max_value)
+# print("Max index:", max_index)
 
-raise "END"
 
 # LOGISTIC REGRESSION
-all_predictions = predict_logistic_regression(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING KNN")
-print(results)
+# all_predictions = predict_logistic_regression(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING KNN")
+# print(results)
 
 # LINEDAR DISCRIMINANT ANALYSIS
-all_predictions = predict_lda(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING LDA")
-print(results)
+# all_predictions = predict_lda(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING LDA")
+# print(results)
 
 # QUADRATIC DISCRIMINANT ANALYSIS
-all_predictions = predict_qda(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING QDA")
-print(results)
+# all_predictions = predict_qda(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING QDA")
+# print(results)
 
 # SUPPORT VECTOR MACHINES
 all_predictions = predict_svm(X_test, X_train, Y_train)
@@ -193,10 +192,10 @@ print("\nTRAINING USING SVM")
 print(results)
 
 # NAIVE BAYES
-all_predictions = predict_naive_bayes(X_test, X_train, Y_train)
-results = check_accuracy(Y_test, all_predictions)
-print("\nTRAINING USING NAIVE BAYES")
-print(results)
+# all_predictions = predict_naive_bayes(X_test, X_train, Y_train)
+# results = check_accuracy(Y_test, all_predictions)
+# print("\nTRAINING USING NAIVE BAYES")
+# print(results)
 
 # # TEST FOR KAGGLE (KNN)
 # knn = KNeighborsClassifier(n_neighbors=27,p=1)
