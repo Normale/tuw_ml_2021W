@@ -7,28 +7,22 @@ import numpy as np
 import pathlib
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+from sklearn import svm
 import timeit
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
-from tqdm import tqdm
-from sklearn.neighbors import KNeighborsClassifier
 
 
 # ---------------- DEFINE FUNCTIONS ----------------
 
-
-# Use the k-NN method (up to k_max) to predict the output variable on x_test, using the training data
-def predict_knn(x_te, x_tr, y_tr, k_min=1, k_max=25):
-    every_prediction = []
-    for k in tqdm(range(k_min,k_max)):
-        # Create KNN classifier
-        knn = KNeighborsClassifier(n_neighbors=k, p=2)
-        # Fit the classifier to the data
-        knn.fit(x_tr, y_tr)
-        # Predict on x_test
-        prediction = knn.predict(x_te)
-        every_prediction.append(prediction)
-    return every_prediction
+# Train the SVM on the training data and predict using the test data
+def predict_svm(x_te, x_tr, y_tr):
+    every_predictions = []
+    svc = svm.SVC()
+    svc.fit(x_tr, y_tr)
+    prediction = svc.predict(x_te)
+    every_predictions.append(prediction)
+    return every_predictions
 
 
 # Check the accuracy of given predictions on the test set y_test
@@ -49,7 +43,7 @@ def check_accuracy(y_test, predictions):
 # ---------------- PREPARE DATA ----------------
 
 # Read the data
-df = pd.read_csv("Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
+df = pd.read_csv("../Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
 # print(df.head())
 
 # Split into input and target variables
@@ -60,8 +54,8 @@ Y = df.iloc[:, -1]
 x = X.values  # returns a numpy array
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(x)
-df_x_scaled = pd.DataFrame(x_scaled)
-# print(df_x_scaled)
+# df_x_scaled = pd.DataFrame(x_scaled)
+df_x_scaled = X
 
 # Import test-data and scaling the data
 pathTest = "Datasets/purchase600-100cls-15k.tes.csv"
@@ -80,14 +74,14 @@ df_test_normalized = pd.DataFrame(x_test_scaled)
 r = []
 t = []
 runtime = []
-testSizeRange = list(range(5, 17, 2))
+
 print("\nTRAINING USING SVM")
-for testSize in testSizeRange:
+for testSize in range(5, 17, 2):
     X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize/100, random_state=35)
 
     # SUPPORT VECTOR MACHINES
     start = timeit.default_timer()
-    all_predictions = predict_knn(X_test, X_train, Y_train)
+    all_predictions = predict_svm(X_test, X_train, Y_train)
     stop = timeit.default_timer()
     time = stop-start
     print('Time: ', time)
@@ -99,73 +93,70 @@ for testSize in testSizeRange:
     t.append(testSize)
     runtime.append(time)
 
-bestOverallResult = np.max(r)
-df = pd.DataFrame(data=r)
-idxs = df.stack().index[np.argmax(df.values)]
-print("The best indexes (testsize, k): ", idxs)
-
-fig = df.plot(title='Training with different k and test sizes', ylabel='Accuracy', xlabel='K')
-fig.legend(testSizeRange)
-
+best_testSize = t[r.index(np.max(r))]
 
 fig = plt.figure()
-plt.scatter(testSizeRange, runtime)
-fig.suptitle('Runtime', fontsize=14)
-plt.xlabel('Test size', fontsize=14)
-plt.ylabel('Run time', fontsize=14)
+plt.scatter(t, r)
+fig.suptitle('SVM with different test sizes', fontsize=14)
+plt.xlabel('Test sie', fontsize=14)
+plt.ylabel('Accuracy', fontsize=14)
+print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
 
-print(idxs[0]+1)
 
-cv_ = int((idxs[0]+1))
+fig, ax1 = plt.subplots()
+
+color = 'tab:red'
+ax1.set_xlabel('Test size')
+ax1.set_ylabel('Accuracy', color=color)
+ax1.plot(t, r, color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+color = 'tab:blue'
+ax2.set_ylabel('runtime', color=color)  # we already handled the x-label with ax1
+ax2.plot(t, runtime, color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+
+cv_ = int((100/(best_testSize*100)))
 testSize = 100/cv_
-clf = KNeighborsClassifier(n_neighbors=idxs[1]+1, metric='euclidean')
+
+clf = svm.SVC(kernel='linear', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_+1)
+x = range(1,cv_+1)
 
 fig = plt.figure()
-plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with euclidean distance', fontsize=14)
+plt.scatter(x,scores)
+fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with linear kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-print(idxs[0]+1)
+cv_ = int((100/(best_testSize*100)))
 
-cv_ = int((idxs[0]+1))
-testSize = 100/cv_
-clf = KNeighborsClassifier(n_neighbors=idxs[1]+1,metric = 'manhattan')
+clf = svm.SVC(kernel='rbf', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_+1)
+x = range(1,cv_+1)
 
 fig = plt.figure()
-plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with manhattan distance', fontsize=14)
+plt.scatter(x,scores)
+fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with rbf kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-cv_ = int((idxs[0]+1))
-testSize = 100/cv_
-clf = KNeighborsClassifier(n_neighbors=idxs[1]+1,metric = 'chebyshev')
+cv_ = int((100/(best_testSize*100)))
+
+clf = svm.SVC(kernel='poly', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_+1)
+x = range(1,cv_+1)
 
 fig = plt.figure()
-plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with chebyshev distance', fontsize=14)
-plt.xlabel('Iteration', fontsize=14)
-plt.ylabel('Accuracy', fontsize=14)
-print("Max accuracy = ", np.max(scores))
-
-cv_ = int((idxs[0]+1))
-testSize = 100/cv_
-clf = KNeighborsClassifier(n_neighbors=idxs[1]+1,metric = 'minkowski')
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_+1)
-
-fig = plt.figure()
-plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with minkowski distance', fontsize=14)
+plt.scatter(x,scores)
+fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with polynomial kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))

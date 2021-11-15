@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 # ---------------- DEFINE FUNCTIONS ----------------
 
-def predict_random_forest(x_te, x_tr, y_tr, k_min=70, k_max=100):
+def predict_random_forest(x_te, x_tr, y_tr, k_min=95, k_max=100):
     every_prediction = []
     for k in tqdm(range(k_min, k_max)):
         rndf = RandomForestClassifier(n_estimators=k, criterion="entropy")
@@ -45,7 +45,7 @@ def check_accuracy(y_test, predictions):
 # ---------------- PREPARE DATA ----------------
 
 # Read the data
-df = pd.read_csv("Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
+df = pd.read_csv("../Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
 # print(df.head())
 
 # Split into input and target variables
@@ -76,7 +76,7 @@ df_test_normalized = pd.DataFrame(x_test_scaled)
 r = []
 t = []
 runtime = []
-testSizeRange = list(range(7, 13, 2))
+testSizeRange = list(range(10, 35, 5))
 
 print("\nTRAINING USING RANDOM FOREST")
 for testSize in testSizeRange:
@@ -114,15 +114,13 @@ fig.suptitle('Runtime', fontsize=14)
 plt.xlabel('Test size', fontsize=14)
 plt.ylabel('Run time', fontsize=14)
 
-cv_ = int((idxs[0] + 1))
-testSize = 100 / cv_
+BestTestSize = testSizeRange[int(idxs[0])]
 clf = RandomForestClassifier(n_estimators=idxs[1] + 1)
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_ + 1)
+scores = cross_val_score(clf, df_x_scaled, Y, cv=BestTestSize)
 
 fig = plt.figure()
-plt.scatter(x, scores)
-fig.suptitle('RF cross validation with test size ' + str(testSize), fontsize=14)
+plt.scatter(testSizeRange, scores)
+fig.suptitle('RF cross validation with test size ' + str(BestTestSize), fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
