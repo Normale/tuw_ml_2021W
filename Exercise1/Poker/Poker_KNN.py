@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Purchase_SVM.ipynb
+"""Poker_SVM.ipynb
 """
 
 import pathlib
@@ -50,39 +50,45 @@ def check_accuracy(y_test, predictions):
 # ---------------- PREPARE DATA ----------------
 
 # Read the data
-df = pd.read_csv("../Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
+df = pd.read_csv("../Datasets/PokerDataSet.csv", encoding="ISO-8859-1")
 # print(df.head())
 
+# Sample 5% of the data!
+df = df.sample(50000, random_state=35)
+
+# 1-HOT-ENCODING
+categorized_df = df.iloc[:, [0, 2, 4, 6, 8]]
+cat_1hot = pd.get_dummies(categorized_df.astype(str))
+# cat_1hot.head()
+
+# Now, because the 1 (Ace) is the highest card in Poker, we should change our data accordingly:
+to_change = df.iloc[:, [1, 3, 5, 7, 9]]
+changed = to_change.replace(range(1, 14), [13] + list(range(1, 13)))
+# Ace is put on top (1 -> 13), Everything else is lowered (7->6 and 2->1 etc.)
+
+prepped = changed.join(cat_1hot).join(df.iloc[:, 10])  # After all column preprocessing
+# prepped.head()
+
 # Split into input and target variables
-X = df.iloc[:, 1:-1]  # Remove the ID and Class columns
-Y = df.iloc[:, -1]
+X = prepped.iloc[:, :-1]  # Remove the ID and Class columns
+Y = prepped.iloc[:, -1]
 
 # Scale data
 x = X.values  # returns a numpy array
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(x)
 df_x_scaled = pd.DataFrame(x_scaled)
+# df_x_scaled = X # USE THIS IF NO SCALING!!
 # print(df_x_scaled)
 
-# Import test-data and scaling the data
-pathTest = "Datasets/purchase600-100cls-15k.tes.csv"
-dirPathTest = pathlib.Path(pathTest)
-df_test = pd.read_csv(dirPathTest)
-
-xTest = df.iloc[:, 1:-1]  # Remove the ID and Class columns
-x_test = xTest.values  # returns a numpy array
-
-x_test_scaled = min_max_scaler.fit_transform(x_test)
-df_test_normalized = pd.DataFrame(x_test_scaled)
-# print(df_test_normalized)
 
 # ---------------- APPLY MODEL & TEST EFFICIENCY ----------------
 
 r = []
 t = []
 runtime = []
-testSizeRange = list(range(5, 17, 2))
-print("\nTRAINING USING SVM")
+testSizeRange = list(range(5, 50, 5))
+print("\nTRAINING USING KNN")
 for testSize in testSizeRange:
     X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize / 100, random_state=35)
 

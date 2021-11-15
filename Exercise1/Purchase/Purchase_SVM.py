@@ -2,15 +2,16 @@
 """Purchase_SVM.ipynb
 """
 
-import pandas as pd
-import numpy as np
 import pathlib
-from sklearn.model_selection import train_test_split
+import timeit
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from sklearn import preprocessing
 from sklearn import svm
-import timeit
 from sklearn.model_selection import cross_val_score
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 
 # ---------------- DEFINE FUNCTIONS ----------------
@@ -77,18 +78,18 @@ runtime = []
 
 print("\nTRAINING USING SVM")
 for testSize in range(5, 17, 2):
-    X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize/100, random_state=35)
+    X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize / 100, random_state=35)
 
     # SUPPORT VECTOR MACHINES
     start = timeit.default_timer()
     all_predictions = predict_svm(X_test, X_train, Y_train)
     stop = timeit.default_timer()
-    time = stop-start
+    time = stop - start
     print('Time: ', time)
     results = check_accuracy(Y_test, all_predictions)
-    print("\nTest size = ", testSize/100)
+    print("\nTest size = ", testSize / 100)
     print(results)
-    testSize = testSize/100
+    testSize = testSize / 100
     r.append(results)
     t.append(testSize)
     runtime.append(time)
@@ -101,7 +102,6 @@ fig.suptitle('SVM with different test sizes', fontsize=14)
 plt.xlabel('Test sie', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
-
 
 fig, ax1 = plt.subplots()
 
@@ -121,41 +121,41 @@ ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()
 
-cv_ = int((100/(best_testSize*100)))
-testSize = 100/cv_
+cv_ = int((100 / (best_testSize * 100)))
+testSize = 100 / cv_
 
 clf = svm.SVC(kernel='linear', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1,cv_+1)
+x = range(1, cv_ + 1)
 
 fig = plt.figure()
-plt.scatter(x,scores)
+plt.scatter(x, scores)
 fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with linear kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-cv_ = int((100/(best_testSize*100)))
+cv_ = int((100 / (best_testSize * 100)))
 
 clf = svm.SVC(kernel='rbf', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1,cv_+1)
+x = range(1, cv_ + 1)
 
 fig = plt.figure()
-plt.scatter(x,scores)
+plt.scatter(x, scores)
 fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with rbf kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-cv_ = int((100/(best_testSize*100)))
+cv_ = int((100 / (best_testSize * 100)))
 
 clf = svm.SVC(kernel='poly', C=1, random_state=42)
 scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1,cv_+1)
+x = range(1, cv_ + 1)
 
 fig = plt.figure()
-plt.scatter(x,scores)
+plt.scatter(x, scores)
 fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with polynomial kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)

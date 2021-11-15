@@ -2,17 +2,17 @@
 """Purchase_RF.ipynb
 """
 
-import pandas as pd
-import numpy as np
 import pathlib
-from sklearn.model_selection import train_test_split
+import timeit
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
-from tqdm import tqdm
-from sklearn import svm
-import timeit
 from sklearn.model_selection import cross_val_score
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 
 # ---------------- DEFINE FUNCTIONS ----------------
