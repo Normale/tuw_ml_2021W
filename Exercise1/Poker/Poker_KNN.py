@@ -4,7 +4,7 @@
 
 import pathlib
 import timeit
-
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -87,14 +87,17 @@ df_x_scaled = pd.DataFrame(x_scaled)
 r = []
 t = []
 runtime = []
-testSizeRange = list(range(5, 50, 5))
+testSizeRange = list(range(15, 35, 5))
+kMin = 15
+kMax = 25
+
 print("\nTRAINING USING KNN")
 for testSize in testSizeRange:
     X_train, X_test, Y_train, Y_test = train_test_split(df_x_scaled, Y, test_size=testSize / 100, random_state=35)
 
-    # SUPPORT VECTOR MACHINES
+    # KNN
     start = timeit.default_timer()
-    all_predictions = predict_knn(X_test, X_train, Y_train)
+    all_predictions = predict_knn(X_test, X_train, Y_train, kMin, kMax)
     stop = timeit.default_timer()
     time = stop - start
     print('Time: ', time)
@@ -120,58 +123,52 @@ fig.suptitle('Runtime', fontsize=14)
 plt.xlabel('Test size', fontsize=14)
 plt.ylabel('Run time', fontsize=14)
 
-print(idxs[0] + 1)
 
-cv_ = int((idxs[0] + 1))
-testSize = 100 / cv_
+BestTestSize = int(math.floor(100/testSizeRange[idxs[0]]))
+folds = math.floor(100 / BestTestSize)
+print("For test size = " + str(BestTestSize))
+
+# EUCLIDIAN
 clf = KNeighborsClassifier(n_neighbors=idxs[1] + 1, metric='euclidean')
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_ + 1)
+scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
+x = range(folds)
 
 fig = plt.figure()
 plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with euclidean distance', fontsize=14)
+fig.suptitle('KNN cross validation with test size ' + str(BestTestSize) + '% with euclidean distance', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-print(idxs[0] + 1)
-
-cv_ = int((idxs[0] + 1))
-testSize = 100 / cv_
+# MANHATTAN
 clf = KNeighborsClassifier(n_neighbors=idxs[1] + 1, metric='manhattan')
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_ + 1)
+scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
 
 fig = plt.figure()
 plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with manhattan distance', fontsize=14)
+fig.suptitle('KNN cross validation with test size ' + str(BestTestSize) + '% with manhattan distance', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-cv_ = int((idxs[0] + 1))
-testSize = 100 / cv_
+# CHEBYSHEV
 clf = KNeighborsClassifier(n_neighbors=idxs[1] + 1, metric='chebyshev')
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_ + 1)
+scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
 
 fig = plt.figure()
 plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with chebyshev distance', fontsize=14)
+fig.suptitle('KNN cross validation with test size ' + str(BestTestSize) + '% with chebyshev distance', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))
 
-cv_ = int((idxs[0] + 1))
-testSize = 100 / cv_
+# MINKOWSKI
 clf = KNeighborsClassifier(n_neighbors=idxs[1] + 1, metric='minkowski')
-scores = cross_val_score(clf, X, Y, cv=cv_)
-x = range(1, cv_ + 1)
+scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
 
 fig = plt.figure()
 plt.scatter(x, scores)
-fig.suptitle('SVM cross validation with test size ' + str(testSize) + '% with minkowski distance', fontsize=14)
+fig.suptitle('KNN cross validation with test size ' + str(BestTestSize) + '% with minkowski distance', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(scores))

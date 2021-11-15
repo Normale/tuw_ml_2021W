@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Purchase_SVM.ipynb
+"""Poker_SVM.ipynb
 """
 
 import pathlib
@@ -42,33 +42,37 @@ def check_accuracy(y_test, predictions):
 
 
 # ---------------- PREPARE DATA ----------------
-
 # Read the data
-df = pd.read_csv("../Datasets/purchase600-100cls-15k.lrn.csv", encoding="ISO-8859-1")
+df = pd.read_csv("../Datasets/PokerDataSet.csv", encoding="ISO-8859-1")
 # print(df.head())
 
+# Sample 5% of the data!
+df = df.sample(50000, random_state=35)
+
+# 1-HOT-ENCODING
+categorized_df = df.iloc[:, [0, 2, 4, 6, 8]]
+cat_1hot = pd.get_dummies(categorized_df.astype(str))
+# cat_1hot.head()
+
+# Now, because the 1 (Ace) is the highest card in Poker, we should change our data accordingly:
+to_change = df.iloc[:, [1, 3, 5, 7, 9]]
+changed = to_change.replace(range(1, 14), [13] + list(range(1, 13)))
+# Ace is put on top (1 -> 13), Everything else is lowered (7->6 and 2->1 etc.)
+
+prepped = changed.join(cat_1hot).join(df.iloc[:, 10])  # After all column preprocessing
+# prepped.head()
+
 # Split into input and target variables
-X = df.iloc[:, 1:-1]  # Remove the ID and Class columns
-Y = df.iloc[:, -1]
+X = prepped.iloc[:, :-1]  # Remove the ID and Class columns
+Y = prepped.iloc[:, -1]
 
 # Scale data
 x = X.values  # returns a numpy array
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(x)
-# df_x_scaled = pd.DataFrame(x_scaled)
-df_x_scaled = X  # Take unscaled data
-
-# Import test-data and scaling the data
-pathTest = "../Datasets/purchase600-100cls-15k.tes.csv"
-dirPathTest = pathlib.Path(pathTest)
-df_test = pd.read_csv(dirPathTest)
-
-xTest = df.iloc[:, 1:-1]  # Remove the ID and Class columns
-x_test = xTest.values  # returns a numpy array
-
-x_test_scaled = min_max_scaler.fit_transform(x_test)
-df_test_normalized = pd.DataFrame(x_test_scaled)
-# print(df_test_normalized)
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(x)
+df_x_scaled = pd.DataFrame(x_scaled)
+# df_x_scaled = X # USE THIS IF NO SCALING!!
+# print(df_x_scaled)ame(x_test_scaled)
 
 # ---------------- APPLY MODEL & TEST EFFICIENCY ----------------
 
@@ -100,7 +104,7 @@ best_testSize = t[r.index(np.max(r))]
 fig = plt.figure()
 plt.scatter(t, r)
 fig.suptitle('SVM with different test sizes', fontsize=14)
-plt.xlabel('Test sie', fontsize=14)
+plt.xlabel('Test size', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
 print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
 
@@ -122,7 +126,7 @@ ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()
 
-folds = int(math.floor(1 / best_testSize))
+folds = int(math.floor(1/best_testSize))
 
 clf = svm.SVC(kernel='linear', C=1, random_state=42)
 scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
@@ -132,7 +136,7 @@ plt.scatter(range(folds), scores)
 fig.suptitle('SVM cross validation with test size ' + str(best_testSize) + '% with linear kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
-print("Max accuracy Linear = ", np.max(scores))
+print("Max accuracy = ", np.max(scores))
 
 clf = svm.SVC(kernel='rbf', C=1, random_state=42)
 scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
@@ -142,7 +146,7 @@ plt.scatter(range(folds), scores)
 fig.suptitle('SVM cross validation with test size ' + str(best_testSize) + '% with rbf kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
-print("Max accuracy rbf = ", np.max(scores))
+print("Max accuracy = ", np.max(scores))
 
 clf = svm.SVC(kernel='poly', C=1, random_state=42)
 scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
@@ -152,4 +156,4 @@ plt.scatter(range(folds), scores)
 fig.suptitle('SVM cross validation with test size ' + str(best_testSize) + '% with polynomial kernel', fontsize=14)
 plt.xlabel('Iteration', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
-print("Max accuracy polynomial = ", np.max(scores))
+print("Max accuracy = ", np.max(scores))
