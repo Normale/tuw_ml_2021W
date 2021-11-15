@@ -111,34 +111,44 @@ for testSize in testSizeRange:
     runtime.append(time)
 
 bestOverallResult = np.max(r)
-df = pd.DataFrame(data=r)
-idxs = df.stack().index[np.argmax(df.values)]
-print("The best indexes (testsize, k): ", idxs)
-bestK = KList[idxs[1]]
+ndf = pd.DataFrame(data=r)
+cols = dict()
+for i in range(len(KList)):
+    cols[i] = KList[i]
+df = ndf.rename(columns=cols)
+print(df.head())
 
-fig = df.plot(title='Training with different k and test sizes', ylabel='Accuracy', xlabel='K')
-fig.legend(testSizeRange)
-# fig.subtitle('SVM with different test sizes', fontsize=14)
-# df.xlabel('Test sie', fontsize=14)
-# df.ylabel('Accuracy', fontsize=14)
-# print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
 
-fig = plt.figure()
-plt.scatter(testSizeRange, runtime)
-fig.suptitle('Runtime', fontsize=14)
-plt.xlabel('Test size', fontsize=14)
-plt.ylabel('Run time', fontsize=14)
 
-BestTestSize = testSizeRange[idxs[0]]/100
-folds = math.floor(1 / BestTestSize)
-clf = RandomForestClassifier(n_estimators=bestK)
-scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
 
-fig = plt.figure()
-plt.scatter(range(folds), scores)
-fig.suptitle('RF cross validation with test size ' + str(BestTestSize), fontsize=14)
-plt.xlabel('Iteration', fontsize=14)
-plt.ylabel('Accuracy', fontsize=14)
-print("Max CV accuracy = ", np.max(scores))
-
-plt.show()
+#
+# idxs = ndf.stack().index[np.argmax(ndf.values)]
+# print("The best indexes (testsize, k): ", idxs)
+# bestK = KList[idxs[1]]
+#
+# fig = df.plot(title='Training with different k and test sizes', ylabel='Accuracy', xlabel='K', x=, logx=True)
+# fig.legend(testSizeRange)
+# # fig.subtitle('SVM with different test sizes', fontsize=14)
+# # df.xlabel('Test sie', fontsize=14)
+# # df.ylabel('Accuracy', fontsize=14)
+# # print("Max accuracy = ", np.max(r), "with testsize = ", best_testSize)
+#
+# fig = plt.figure()
+# plt.scatter(testSizeRange, runtime)
+# fig.suptitle('Runtime', fontsize=14)
+# plt.xlabel('Test size', fontsize=14)
+# plt.ylabel('Run time', fontsize=14)
+#
+# BestTestSize = testSizeRange[idxs[0]]/100
+# folds = math.floor(1 / BestTestSize)
+# clf = RandomForestClassifier(n_estimators=bestK)
+# scores = cross_val_score(clf, df_x_scaled, Y, cv=folds)
+#
+# fig = plt.figure()
+# plt.scatter(range(folds), scores)
+# fig.suptitle('RF cross validation with test size ' + str(BestTestSize), fontsize=14)
+# plt.xlabel('Iteration', fontsize=14)
+# plt.ylabel('Accuracy', fontsize=14)
+# print("Max CV accuracy = ", np.max(scores))
+#
+# plt.show()
