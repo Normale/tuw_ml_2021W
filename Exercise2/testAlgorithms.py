@@ -1,17 +1,18 @@
-from Exercise2.Datasets.Purchase import Purchase
+from Exercise2.Datasets.Wine import Wine
 import matplotlib.pyplot as plt
 import os
 import pickle
-
+from pathlib import Path
 
 """---------------- INITIALIZE DATASET --------------------"""
 
-if input("Do you wish to load a previous state? (Y/N)") == "Y":
+if False: #input("Do you wish to load a previous state? (Y/N)") == "Y":
     name = input("Which state do you want to load?")
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
     # TODO: implement all models at once (use dictionaries and keys)
-    dataset = Purchase()
+    filepath = Path("Exercise2/Datasets/Raw") / "winequality-red.csv"
+    dataset = Wine(filepath)
 
 
 """------------------- PREDICT STATE ----------------------"""
@@ -43,7 +44,7 @@ plt.show()
 
 """----------------------- SAVE STATE ----------------------"""
 
-if input("Do you wish to save the current state? (Y/N)") == "Y":
-    name = input("Under which name do you want to save the state?")
-    file = open(os.path.abspath('Datasets/Dump/'+name), 'wb+')
-    pickle.dump(dataset, file)
+# if input("Do you wish to save the current state? (Y/N)") == "Y":
+#     name = input("Under which name do you want to save the state?")
+#     file = open(os.path.abspath('Datasets/Dump/'+name), 'wb+')
+#     pickle.dump(dataset, file)
