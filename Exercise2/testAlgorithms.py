@@ -4,6 +4,14 @@ import os
 import pickle
 from pathlib import Path
 
+# Temporary solution due to discrepancies between IDEs
+if "Exercise2" not in os.getcwd(): 
+    print(os.getcwd())
+    print(os.listdir(os.getcwd()))
+    if "Exercise2" in os.listdir(os.getcwd()):
+        os.chdir("Exercise2")
+    else: 
+        raise NotImplementedError
 """---------------- INITIALIZE DATASET --------------------"""
 
 if False: #input("Do you wish to load a previous state? (Y/N)") == "Y":
@@ -11,9 +19,8 @@ if False: #input("Do you wish to load a previous state? (Y/N)") == "Y":
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
     # TODO: implement all models at once (use dictionaries and keys)
-    filepath = Path("Exercise2/Datasets/Raw") / "winequality-red.csv"
+    filepath = Path("Datasets/Raw") / "winequality-red.csv"
     dataset = Wine(filepath)
-
 
 """------------------- PREDICT STATE ----------------------"""
 
