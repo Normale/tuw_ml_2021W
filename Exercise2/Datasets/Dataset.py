@@ -3,11 +3,14 @@ from Exercise2.Algorithms.linear import ElasticNetRegression as EN
 from Exercise2.Algorithms.svm import SVM
 from Exercise2.Algorithms.rf import RFR as RF
 from pathlib import Path
-
+import matplotlib.pyplot as plt
+from scipy.stats import zscore
+import numpy as np
 
 class Dataset:
     def __init__(self, filepath: Path):
         self.filepath = filepath
+        self.df = None
         self.x_train = None
         self.y_train = None
         self.x_test = None
@@ -19,6 +22,21 @@ class Dataset:
     def get_data(self):
         return self.x_train, self.y_train, self.x_test
 
+    def show_distributions(self,n=None):
+        plt.ioff()
+        for col in self.df.columns:
+            plt.figure() #prevent drawing everything on one chart
+            temp = self.df[col]
+            plot = temp.hist(bins=30, log=True)
+            fig = plot.get_figure()
+            fig.savefig(f"Graphs/{self.__class__.__name__}-{col}dist{n}.png")
+            fig.data = []
+        plt.ion()
+    def remove_outliers(self):
+        z_scores = zscore(self.df)
+        abs_z_scores = np.abs(z_scores)
+        filtered_entries = (abs_z_scores < 3).all(axis=1)
+        self.df = self.df[filtered_entries]
     # Linear Regressors
 
     def calcLRPrediction(self):
