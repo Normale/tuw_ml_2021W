@@ -11,12 +11,11 @@ class Wine(Dataset):
     def __init__(self, *args, **kwargs):
         super(Wine, self).__init__(*args, **kwargs)
         self.read_csv()
-        self.show_distributions(0)
+        self.show_distributions("_raw")
         self.remove_outliers()
         self.make_train_and_test_data()    
-        self.show_distributions(1)
-  
-          
+        self.show_distributions("_clean")
+        self.show_correlations(figsize=(8,6))
 
     def read_csv(self):
         self.df = pd.read_csv(self.filepath, sep =';', encoding="ISO-8859-1")
