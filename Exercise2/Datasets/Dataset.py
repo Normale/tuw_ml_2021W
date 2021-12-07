@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 import numpy as np
+import seaborn as sns
 
 class Dataset:
     def __init__(self, filepath: Path):
@@ -18,6 +19,7 @@ class Dataset:
         self.en_prediction = None
         self.svm_prediction = None
         self.rf_prediction = None
+        Path(f"Graphs/{self.__class__.__name__}/distributions").mkdir(parents=True, exist_ok=True)
 
     def get_data(self):
         return self.x_train, self.y_train, self.x_test
@@ -29,16 +31,30 @@ class Dataset:
             temp = self.df[col]
             plot = temp.hist(bins=30, log=True)
             fig = plot.get_figure()
-            fig.savefig(f"Graphs/{self.__class__.__name__}-{col}dist{n}.png")
+            fig.savefig(f"Graphs/{self.__class__.__name__}/distributions/{col}{n}.png")
             fig.data = []
+            plt.close(fig)
         plt.ion()
+
+    def show_correlations(self, figsize=(6,5)):
+        plt.ioff()
+        plt.figure(figsize=figsize)
+        corr = self.df.corr().round(2)
+        plot = sns.heatmap(corr, annot=True,
+            cmap=sns.diverging_palette(20, 220, n=200))
+        fig = plot.get_figure()
+        plt.tight_layout()
+        fig.savefig(f"Graphs/{self.__class__.__name__}/correlations.png")
+        plt.close(fig)
+        plt.ion()
+
     def remove_outliers(self):
         z_scores = zscore(self.df)
         abs_z_scores = np.abs(z_scores)
         filtered_entries = (abs_z_scores < 3).all(axis=1)
         self.df = self.df[filtered_entries]
-    # Linear Regressors
 
+    # Linear Regressors
     def calcLRPrediction(self):
         lra = Lra(self.x_test, self.x_train, self.y_train)
         lra_prediction = lra.make_prediction()
