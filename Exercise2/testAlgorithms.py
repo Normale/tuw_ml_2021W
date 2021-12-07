@@ -7,8 +7,6 @@ from pathlib import Path
 
 # Temporary solution due to discrepancies between IDEs
 if "Exercise2" not in os.getcwd(): 
-    print(os.getcwd())
-    print(os.listdir(os.getcwd()))
     if "Exercise2" in os.listdir(os.getcwd()):
         os.chdir("Exercise2")
     else: 
