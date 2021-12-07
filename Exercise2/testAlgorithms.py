@@ -14,7 +14,7 @@ if "Exercise2" not in os.getcwd():
         raise NotImplementedError
 """---------------- INITIALIZE DATASET --------------------"""
 
-if False: #input("Do you wish to load a previous state? (Y/N)") == "Y":
+if input("Do you wish to load a previous state? (Y/N)") == "Y":
     name = input("Which state do you want to load?")
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
@@ -57,7 +57,7 @@ plt.show()
 
 """----------------------- SAVE STATE ----------------------"""
 
-# if input("Do you wish to save the current state? (Y/N)") == "Y":
-#     name = input("Under which name do you want to save the state?")
-#     file = open(os.path.abspath('Datasets/Dump/'+name), 'wb+')
-#     pickle.dump(dataset, file)
+if input("Do you wish to save the current state? (Y/N)") == "Y":
+    name = input("Under which name do you want to save the state?")
+    file = open(os.path.abspath('Datasets/Dump/'+name), 'wb+')
+    pickle.dump(dataset, file)
