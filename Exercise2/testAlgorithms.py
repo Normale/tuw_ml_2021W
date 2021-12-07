@@ -1,5 +1,6 @@
 from Exercise2.Datasets.Wine import Wine
 from Exercise2.Datasets.Concrete import Concrete
+from Exercise2.Datasets.Hotel import Hotel
 import matplotlib.pyplot as plt
 import os
 import pickle
@@ -22,7 +23,8 @@ else:
     dataset = Wine(filepath)
     fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
     d2 = Concrete(fp2)
-
+    fp3 = Path("Datasets/Raw") / "hotels.csv"
+    d3 = Hotel(fp3)
 # #Close the program 
 # import sys
 # sys.exit(100)
