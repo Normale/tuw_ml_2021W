@@ -56,4 +56,4 @@ class Concrete(Dataset):
 
     @staticmethod
     def get_name():
-        return 'Purchase'
+        return 'Concrete'

@@ -42,4 +42,4 @@ class Wine(Dataset):
 
     @staticmethod
     def get_name():
-        return 'Purchase'
+        return 'Wine'
