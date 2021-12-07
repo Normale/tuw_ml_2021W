@@ -1,4 +1,5 @@
 from Exercise2.Datasets.Wine import Wine
+from Exercise2.Datasets.Concrete import Concrete
 import matplotlib.pyplot as plt
 import os
 import pickle
@@ -21,7 +22,12 @@ else:
     # TODO: implement all models at once (use dictionaries and keys)
     filepath = Path("Datasets/Raw") / "winequality-red.csv"
     dataset = Wine(filepath)
+    fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
+    d2 = Concrete(fp2)
 
+# #Close the program 
+# import sys
+# sys.exit(100)
 """------------------- PREDICT STATE ----------------------"""
 
 lr_prediction = dataset.getLRPrediction()
