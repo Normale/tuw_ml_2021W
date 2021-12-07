@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import zscore
 import numpy as np
 import seaborn as sns
+from pandas.api.types import is_numeric_dtype
+import pandas as pd
 
 class Dataset:
     def __init__(self, filepath: Path):
@@ -29,7 +31,10 @@ class Dataset:
         for col in self.df.columns:
             plt.figure() #prevent drawing everything on one chart
             temp = self.df[col]
-            plot = temp.hist(bins=30, log=True)
+            if is_numeric_dtype(temp):
+                plot = temp.hist(bins=30, log=True)
+            else:
+                plot = temp.value_counts().plot.pie(autopct='%.1f%%')
             fig = plot.get_figure()
             fig.savefig(f"Graphs/{self.__class__.__name__}/distributions/{col}{n}.png")
             fig.data = []
@@ -49,10 +54,22 @@ class Dataset:
         plt.ion()
 
     def remove_outliers(self):
-        z_scores = zscore(self.df)
+        numeric = self.df.select_dtypes(include=np.number)
+        non_num = self.df.select_dtypes(exclude=np.number)
+        z_scores = zscore(numeric)
         abs_z_scores = np.abs(z_scores)
         filtered_entries = (abs_z_scores < 3).all(axis=1)
-        self.df = self.df[filtered_entries]
+        numeric = numeric[filtered_entries]
+        numeric = numeric.join(non_num)
+        self.df = numeric
+
+    def one_hot_encode(self, columns):
+        # Get one hot encoding of columns
+        one_hot = pd.get_dummies(self.df[columns])
+        # Drop encoded columns 
+        tmp = self.df.drop(columns,axis = 1)
+        # Join encoding 
+        self.df = tmp.join(one_hot)
 
     # Linear Regressors
     def calcLRPrediction(self):
