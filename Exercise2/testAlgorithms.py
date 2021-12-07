@@ -5,13 +5,12 @@ import pickle
 from pathlib import Path
 
 """---------------- INITIALIZE DATASET --------------------"""
-
 if False: #input("Do you wish to load a previous state? (Y/N)") == "Y":
     name = input("Which state do you want to load?")
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
     # TODO: implement all models at once (use dictionaries and keys)
-    filepath = Path("Exercise2/Datasets/Raw") / "winequality-red.csv"
+    filepath = Path("Datasets/Raw") / "winequality-red.csv"
     dataset = Wine(filepath)
 
 

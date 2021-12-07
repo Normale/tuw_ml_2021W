@@ -4,6 +4,7 @@ from sklearn import preprocessing, model_selection
 from Exercise2.Datasets.Dataset import Dataset
 from typing import Tuple
 
+
 class Wine(Dataset):
 
     def __init__(self, *args, **kwargs):
@@ -14,7 +15,7 @@ class Wine(Dataset):
         """
            Makes train and test data and saves it in instance variables.
         """
-        df = pd.read_csv(self.filepath, sep =';', encoding="ISO-8859-1")
+        df = pd.read_csv(self.filepath, sep=';', encoding="ISO-8859-1")
         
         # Split into input and target variables
         target = ["quality"]
@@ -31,4 +32,4 @@ class Wine(Dataset):
 
     @staticmethod
     def get_name():
-        return 'Purchase'
+        return 'Wine'

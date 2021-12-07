@@ -8,11 +8,11 @@ class RFR(Algorithm):
     Lower C means a higher penalty on regularization
     Distance eps around prediction that is not accounted for in the score
     """
-    def __init__(self, x, y, t, n=25):
+    def __init__(self, x_test, x_train, y_train, n=25):
         print("---   INITIALIZING (RF)   ---")
-        super().__init__(x, y, t)
+        super().__init__(x_test, x_train, y_train)
         self.reg = rfr(n_estimators=n, random_state=123)\
-            .fit(self.xTrain, self.yTrain)
+            .fit(self.xTrain, self.yTrain.values.ravel())  # Ravel makes it a 1xN vector
 
     def get_regression(self):
         return self.reg

@@ -7,7 +7,9 @@ class LinearRegression(Algorithm):  # Upgrade to LinearRegressionCV for automati
     def __init__(self, x, y, t):
         super().__init__(x, y, t)
         print("---   INITIALIZING (LR)   ---")
-        self.reg = LM.LinearRegression().fit(self.xTrain, self.yTrain)
+        print(self.yTrain)
+        print(self.yTrain.values.ravel())
+        self.reg = LM.LinearRegression().fit(self.xTrain, self.yTrain.values.ravel())  # Ravel makes it a 1xN vector
 
     def get_regression(self):
         return self.reg
@@ -36,7 +38,8 @@ class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic 
         print("---   INITIALIZING (EN)   ---")
         self.alpha = alpha
         self.l1_ratio = l1_ratio
-        self.reg = LM.ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=123).fit(self.xTrain, self.yTrain)
+        self.reg = LM.ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=123)\
+            .fit(self.xTrain, self.yTrain.values.ravel())  # Ravel makes it a 1xN vector
 
     def get_regression(self):
         return self.reg

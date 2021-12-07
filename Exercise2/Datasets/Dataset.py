@@ -11,6 +11,7 @@ class Dataset:
         self.x_train = None
         self.y_train = None
         self.x_test = None
+        self.y_test = None
         self.lr_prediction = None
         self.en_prediction = None
         self.svm_prediction = None
