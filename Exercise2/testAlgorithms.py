@@ -1,9 +1,17 @@
-from Exercise2.Datasets.Purchase import Purchase
+from Exercise2.Datasets.Wine import Wine
+from Exercise2.Datasets.Concrete import Concrete
+from Exercise2.Datasets.Hotel import Hotel
 import matplotlib.pyplot as plt
 import os
 import pickle
+from pathlib import Path
 
-
+# Temporary solution due to discrepancies between IDEs
+if "Exercise2" not in os.getcwd(): 
+    if "Exercise2" in os.listdir(os.getcwd()):
+        os.chdir("Exercise2")
+    else: 
+        raise NotImplementedError
 """---------------- INITIALIZE DATASET --------------------"""
 
 if input("Do you wish to load a previous state? (Y/N)") == "Y":
@@ -11,9 +19,15 @@ if input("Do you wish to load a previous state? (Y/N)") == "Y":
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
     # TODO: implement all models at once (use dictionaries and keys)
-    dataset = Purchase()
-
-
+    filepath = Path("Datasets/Raw") / "winequality-red.csv"
+    dataset = Wine(filepath)
+    fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
+    d2 = Concrete(fp2)
+    fp3 = Path("Datasets/Raw") / "hotels.csv"
+    d3 = Hotel(fp3)
+# #Close the program 
+# import sys
+# sys.exit(100)
 """------------------- PREDICT STATE ----------------------"""
 
 lr_prediction = dataset.getLRPrediction()
