@@ -2,6 +2,7 @@ from Exercise2.Algorithms.linear import LinearRegression as Lra
 from Exercise2.Algorithms.linear import ElasticNetRegression as EN
 from Exercise2.Algorithms.svm import SVM
 from Exercise2.Algorithms.rf import RFR as RF
+from Exercise2.GradientDescent import GradientDescent as GD
 from pathlib import Path
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
@@ -9,6 +10,9 @@ import numpy as np
 import seaborn as sns
 from pandas.api.types import is_numeric_dtype
 import pandas as pd
+from sklearn import model_selection , metrics
+import copy
+
 
 class Dataset:
     def __init__(self, filepath: Path):
@@ -16,6 +20,7 @@ class Dataset:
         self.df = None
         self.x_train = None
         self.y_train = None
+        self.y_test = None
         self.x_test = None
         self.lr_prediction = None
         self.en_prediction = None
@@ -29,7 +34,7 @@ class Dataset:
     def show_distributions(self,n=None):
         plt.ioff()
         for col in self.df.columns:
-            plt.figure() #prevent drawing everything on one chart
+            plt.figure()  # prevent drawing everything on one chart
             temp = self.df[col]
             if is_numeric_dtype(temp):
                 plot = temp.hist(bins=30, log=True)
@@ -67,34 +72,84 @@ class Dataset:
         # Get one hot encoding of columns
         one_hot = pd.get_dummies(self.df[columns])
         # Drop encoded columns 
-        tmp = self.df.drop(columns,axis = 1)
+        tmp = self.df.drop(columns, axis=1)
         # Join encoding 
         self.df = tmp.join(one_hot)
 
     # Linear Regressors
-    def calcLRPrediction(self):
-        lra = Lra(self.x_test, self.x_train, self.y_train)
-        lra_prediction = lra.make_prediction()
-        self.lr_prediction = lra_prediction
+    def calcLRPrediction(self, save=True, data=None):
+        if data is None:
+            x_test = self.x_test
+            x_train = self.x_train
+            y_train = self.y_train
+        else:
+            x_test, x_train, y_train = data
 
-    def calcENPrediction(self, alpha=0.5, l1_ratio=0.5):
-        en = EN(self.x_test, self.x_train, self.y_train, alpha, l1_ratio)  # Params: alpha, l1_ratio
-        en_prediction = en.make_prediction()
-        self.en_prediction = en_prediction
+        lra = Lra(x_test, x_train, y_train)
+        lra_prediction = lra.make_prediction(x_test)
+        if save is True:
+            self.lr_prediction = lra_prediction
+        return lra_prediction
+
+    def calcENPrediction(self, params=None, save=True, data=None):
+        if params is None:
+            params = EN.params
+        alpha, l1_ratio = params.values()
+
+        if data is None:
+            x_test = self.x_test
+            x_train = self.x_train
+            y_train = self.y_train
+        else:
+            x_test, x_train, y_train = data
+
+        en = EN(x_test, x_train, y_train, alpha['value'], l1_ratio['value'])  # Params: alpha, l1_ratio
+        en_prediction = en.make_prediction(x_test)
+        if save is True:
+            self.en_prediction = en_prediction
+        return en_prediction
 
     # Random Forests Regressor
 
-    def calcRFPrediction(self, n=50):
-        rf = RF(self.x_test, self.x_train, self.y_train, n)  # Params: n_estimators
-        rf_prediction = rf.make_prediction()
-        self.rf_prediction = rf_prediction
+    def calcRFPrediction(self, params=None, save=True, data=None):
+        if params is None:
+            params = {'n_estimators': {'value': 50, 'type': 'int', 'min': 1, 'max': 1000, 'e': 5}}
+        n = params['n_estimators']
+
+        if data is None:
+            x_test = self.x_test
+            x_train = self.x_train
+            y_train = self.y_train
+        else:
+            x_test, x_train, y_train = data
+
+        rf = RF(x_test, x_train, y_train, n['value'])  # Params: n_estimators
+        rf_prediction = rf.make_prediction(x_test)
+        if save is True:
+            self.rf_prediction = rf_prediction
+        return rf_prediction
 
     # Support Vector Machine Regressor
 
-    def calcSVMPrediction(self, kernel='linear', C=1.0, eps=0.1):
-        svm = SVM(self.x_test, self.x_train, self.y_train, kernel=kernel, C=C, eps=eps)  # Params: C, eps, kernel
-        svm_prediction = svm.make_prediction()
-        self.svm_prediction = svm_prediction
+    def calcSVMPrediction(self, params=None, save=True, data=None):
+        if params is None:
+            params = {'C': {'value': 1.0, 'type': 'float', 'min': 0, 'max': 10, 'e': 0.01},
+                      'eps': {'value': 0.1, 'type': 'float', 'min': 0, 'max': 5, 'e': 0.001}}
+        C, eps = params.values()
+        kernel = 'linear'  # TODO: implement other kernels
+
+        if data is None:
+            x_test = self.x_test
+            x_train = self.x_train
+            y_train = self.y_train
+        else:
+            x_test, x_train, y_train = data
+
+        svm = SVM(x_test, x_train, y_train, kernel=kernel, C=C, eps=eps)  # Params: C, eps, kernel
+        svm_prediction = svm.make_prediction(x_test)
+        if save is True:
+            self.svm_prediction = svm_prediction
+        return svm_prediction
 
     # Getters
 
@@ -131,3 +186,47 @@ class Dataset:
 
     def setSVMPrediction(self, pred):
         self.svm_prediction = pred
+
+    # Score
+
+    def getENScore(self, x, y, p):
+        X_train, X_test, Y_Train, Y_Test = model_selection.train_test_split(x, y, test_size=0.2, random_state=25)
+        pred = self.calcENPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
+        return metrics.mean_absolute_percentage_error(Y_Test, pred)
+
+    # Search
+
+    def searchEN(self, paramList=EN.params, s=0.1):
+        # Initialise parameters
+        x = self.x_train
+        y = self.y_train
+        f = self.getENScore
+        gd = GD(f, paramList, x, y, s=s)
+        solution_params = gd.solve()
+        best_prediction = self.calcENPrediction(solution_params)
+        cost = self.getENScore(x, y, paramList)
+        return solution_params, cost
+        # return solution_params, best_prediction, cost
+
+    def full_search_EN(self):
+        best_sol = self.searchEN()
+        all_sol = []
+        gridStates_alpha = np.logspace(-2,2, num=5, base=2).copy()
+        gridStates_l1 = [0.9]
+        gridStates_l1.extend(np.logspace(-1, -3, num=3, base=10).copy())
+        for s in [1, 0.01, 0.0001]:
+            print("-------------------------------------")
+            print("S:{}".format(s))
+            print("-------------------------------------")
+            for alpha in gridStates_alpha:
+                for l1 in gridStates_l1:
+                    par = EN.params
+                    par['alpha']['value'] = alpha
+                    par['l1_ratio']['value'] = l1
+                    sol = self.searchEN(par, s=s)
+                    print(sol)
+                    if sol[1] > best_sol[1]:
+                    # if sol[2] > best_sol[2]:
+                            best_sol = copy.deepcopy(sol)
+                    all_sol.append(copy.deepcopy(sol))
+        return best_sol, all_sol

@@ -12,18 +12,16 @@ class LinearRegression(Algorithm):  # Upgrade to LinearRegressionCV for automati
     def get_regression(self):
         return self.reg
 
-    def make_prediction(self):
+    def make_prediction(self, xTest):
         print("---   PREDICTING (LR)   ---")
-        return self.reg.predict(self.xTest)  # LR(positive=True) for only positive coef
-
-    def get_R2(self, yTest):
-        return self.reg.score(self.xTest, yTest)
+        return self.reg.predict(xTest)  # LR(positive=True) for only positive coef
 
 
 class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic CV!
 
-    alpha_range = (0, 20)  # Iterate logarithmically!
-    l1_ratio_range = (0, 1)
+    params = {'alpha': {'value': 0.5, 'type': 'float', 'min': 10**-8, 'max': 20, 'e': 10**-7},
+              'l1_ratio': {'value': 0.05, 'type': 'float', 'min': 10**-8, 'max': 1, 'e': 10**-7}}
+    # TODO: Iterate alpha logarithmically
 
     """
     Elastic Net Regression combines the best of both worlds from Ridge Regression and Lasso Regression
@@ -33,7 +31,7 @@ class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic 
     """
     def __init__(self, x, y, t, alpha=0.5, l1_ratio=0.5):
         Algorithm.__init__(self, x, y, t)
-        print("---   INITIALIZING (EN)   ---")
+        # print("---   INITIALIZING (EN)   ---")
         self.alpha = alpha
         self.l1_ratio = l1_ratio
         self.reg = LM.ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=123).fit(self.xTrain, self.yTrain)
@@ -41,9 +39,6 @@ class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic 
     def get_regression(self):
         return self.reg
 
-    def make_prediction(self):
-        print("---   PREDICTING (EN)   ---")
-        return self.reg.predict(self.xTest)
-
-    def get_R2(self, yTest):
-        return self.reg.score(self.xTest, yTest)
+    def make_prediction(self, xTest):
+        # print("---   PREDICTING (EN)   ---")
+        return self.reg.predict(xTest)

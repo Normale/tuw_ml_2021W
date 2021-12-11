@@ -27,9 +27,6 @@ class SVM(Algorithm):
     def get_regression(self):
         return self.reg
 
-    def make_prediction(self):
+    def make_prediction(self, xTest):
         print("---   PREDICTING (SVM) with kernel " + self.kernel + "  ---")
-        return self.reg.predict(self.xTest)  # LR(positive=True) for only positive coef
-
-    def get_R2(self, yTest):
-        return self.reg.score(self.xTest, yTest)
+        return self.reg.predict(xTest)  # LR(positive=True) for only positive coef

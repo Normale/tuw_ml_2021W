@@ -17,9 +17,7 @@ class RFR(Algorithm):
     def get_regression(self):
         return self.reg
 
-    def make_prediction(self):
+    def make_prediction(self, xTest):
         print("---   PREDICTING (RF)   ---")
-        return self.reg.predict(self.xTest)
+        return self.reg.predict(xTest)
 
-    def get_R2(self, yTest):
-        return self.reg.score(self.xTest, yTest)
