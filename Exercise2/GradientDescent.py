@@ -14,26 +14,33 @@ class GradientDescent:
         self.f = f
         self.x = x
         self.y = y
+        self.cost = []
+        self.prev_params = {}
 
     def solve(self):
         while self.it < self.max_it:
             self.it += 1
+
             print("GD Step {}".format(self.it))
             print("Params: alpha={}, l1_ratio={}".format(self.params['alpha']['value'], self.params['l1_ratio']['value']))
+
             cost = self.f(self.x, self.y, self.params)
+            self.cost.append(cost)
             print("Cost = {}".format(cost))
+
             gradient = self.get_gradient()
             print("Gradient = {}".format(gradient))
+            
             if self.stop_criterium(gradient):
-                return self.params
+                return self.params, self.cost
             self.allowed_params()
 
             self.param_subtract(gradient)
-        return self.params
+        return self.params, self.cost
 
     def param_subtract(self, subt: dict):
         for param, val in self.params.items():
-            val['value'] = val['value'] + self.s*subt[param] # THIS SHOULD BE '-' BUT DOESNT GIVE GOOD RESULTS????
+            val['value'] = val['value'] - self.s*subt[param]  # THIS SHOULD BE '-' BUT DOESNT GIVE GOOD RESULTS????
             if val['type'] == 'int':
                 val['value'] = math.ceil(val['value'])
             if val['value'] > val['max']:

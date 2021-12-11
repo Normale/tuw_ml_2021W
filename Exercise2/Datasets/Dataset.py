@@ -202,7 +202,9 @@ class Dataset:
         y = self.y_train
         f = self.getENScore
         gd = GD(f, paramList, x, y, s=s)
-        solution_params = gd.solve()
+        solution_params, costs = gd.solve()
+        plt.plot(costs)
+        plt.savefig('EN_search.png')
         best_prediction = self.calcENPrediction(solution_params)
         cost = self.getENScore(x, y, paramList)
         return solution_params, cost
@@ -211,10 +213,10 @@ class Dataset:
     def full_search_EN(self):
         best_sol = self.searchEN()
         all_sol = []
-        gridStates_alpha = np.logspace(-2,2, num=5, base=2).copy()
-        gridStates_l1 = [0.9]
+        gridStates_alpha = np.logspace(-2, 2, num=5, base=2).copy()
+        gridStates_l1 = [0.5]
         gridStates_l1.extend(np.logspace(-1, -3, num=3, base=10).copy())
-        for s in [1, 0.01, 0.0001]:
+        for s in [0.1, 0.01]:
             print("-------------------------------------")
             print("S:{}".format(s))
             print("-------------------------------------")
