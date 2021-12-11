@@ -12,9 +12,9 @@ class Wine(Dataset):
         super(Wine, self).__init__(*args, **kwargs)
         self.read_csv()
         self.show_distributions("_raw")
-        self.remove_outliers()
         self.make_train_and_test_data()    
-        self.show_distributions("_clean")
+        self.remove_outliers()
+        # self.show_distributions("_clean")
         self.show_correlations(figsize=(8,6))
 
     def read_csv(self):
@@ -33,11 +33,8 @@ class Wine(Dataset):
 
         # Scale data
         sc = preprocessing.MinMaxScaler()
-        X_train = sc.fit_transform(X_train)
-        X_test = sc.fit_transform(X_test)
-        self.x_train = X_train
-        self.x_test = X_test
-
+        self.x_train = sc.fit_transform(X_train)
+        self.x_test = sc.fit_transform(X_test)
 
 
     @staticmethod

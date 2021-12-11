@@ -15,10 +15,10 @@ class Hotel(Dataset):
         super(Hotel, self).__init__(*args, **kwargs)
         self.read_csv()
         self.show_distributions("_raw")
-        self.remove_outliers()
-        self.show_distributions("_clean")
+        # self.show_distributions("_clean")
         self.one_hot_encode(["City"])
         self.make_train_and_test_data()
+        self.remove_outliers()
         self.show_correlations(figsize=(8,6))
 
     def read_csv(self):

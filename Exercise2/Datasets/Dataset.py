@@ -59,14 +59,38 @@ class Dataset:
         plt.ion()
 
     def remove_outliers(self):
-        numeric = self.df.select_dtypes(include=np.number)
-        non_num = self.df.select_dtypes(exclude=np.number)
-        z_scores = zscore(numeric)
-        abs_z_scores = np.abs(z_scores)
-        filtered_entries = (abs_z_scores < 3).all(axis=1)
-        numeric = numeric[filtered_entries]
-        numeric = numeric.join(non_num)
-        self.df = numeric
+        dfx = pd.DataFrame(self.x_train)
+        numeric = dfx.select_dtypes(include=np.number)
+        non_num = dfx.select_dtypes(exclude=np.number)
+        abs_z_scores = np.abs(zscore(numeric))
+        filtered_entries_x = (abs_z_scores < 3).all(axis=1)
+        dfx = numeric.join(non_num)
+
+        dfy = pd.DataFrame(self.y_train)
+        abs_z_scores = np.abs(zscore(dfy))
+        filtered_entries_y = (abs_z_scores < 3).all(axis=1)
+
+        filtered_entries = np.logical_and(filtered_entries_x, filtered_entries_y)
+        self.y_train = dfy[filtered_entries].to_numpy()
+        self.x_train = dfx[filtered_entries].to_numpy()
+
+
+        dfx = pd.DataFrame(self.x_test)
+        numeric = dfx.select_dtypes(include=np.number)
+        non_num = dfx.select_dtypes(exclude=np.number)
+        abs_z_scores = np.abs(zscore(numeric))
+        filtered_entries_x = (abs_z_scores < 3).all(axis=1)
+        dfx = numeric.join(non_num)
+
+        dfy = pd.DataFrame(self.y_test)
+        abs_z_scores = np.abs(zscore(dfy))
+        filtered_entries_y = (abs_z_scores < 3).all(axis=1)
+
+        filtered_entries = np.logical_and(filtered_entries_x, filtered_entries_y)
+        self.y_test = dfy[filtered_entries].to_numpy()
+        self.x_test = dfx[filtered_entries].to_numpy()
+
+        
 
     def one_hot_encode(self, columns):
         # Get one hot encoding of columns
