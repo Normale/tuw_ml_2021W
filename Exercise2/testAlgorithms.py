@@ -25,18 +25,18 @@ else:
     fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
     fp3 = Path("Datasets/Raw") / "hotels.csv"
 
-    # dataset = Wine(filepath)
-    # name = 'Wine'
+    dataset = Wine(filepath)
+    name = 'Wine'
     #
     # dataset = Concrete(fp2)
     # name = 'Concrete'
     #
-    dataset = Hotel(fp3)
-    name = 'Hotel'
+    # dataset = Hotel(fp3)
+    # name = 'Hotel'
 
-    method = 'EN'
-    # method = 'SVM'
+    # method = 'EN'
     # method = 'RF'
+    method = 'SVM'
 
 
 """------------------- PREDICT STATE ----------------------"""
@@ -48,9 +48,9 @@ else:
 
 """------------------- GRADIENT DESCENT ----------------------"""
 
-best_sol, all_sol, all_paths = dataset.full_search_EN()
+# best_sol, all_sol, all_paths = dataset.full_search_EN()
 # best_sol, all_sol, all_paths = dataset.full_search_RF()
-# best_sol, all_sol, all_paths = dataset.full_search_SVM()
+best_sol, all_sol, all_paths = dataset.full_search_SVM()
 
 print("FINISHED")
 file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')

@@ -71,7 +71,7 @@ class Dataset:
         abs_z_scores = np.abs(zscore(dfy))
         filtered_entries_y = (abs_z_scores < 3).all(axis=1)
 
-        filtered_entries = np.logical_and(filtered_entries_x, filtered_entries_y)
+        filtered_entries = np.logical_and(filtered_entries_x.to_numpy(), filtered_entries_y.to_numpy())
         self.y_train = dfy[filtered_entries].to_numpy()
         self.x_train = dfx[filtered_entries].to_numpy()
 
@@ -87,7 +87,7 @@ class Dataset:
         abs_z_scores = np.abs(zscore(dfy))
         filtered_entries_y = (abs_z_scores < 3).all(axis=1)
 
-        filtered_entries = np.logical_and(filtered_entries_x, filtered_entries_y)
+        filtered_entries = np.logical_and(filtered_entries_x.to_numpy(), filtered_entries_y.to_numpy())
         self.y_test = dfy[filtered_entries].to_numpy()
         self.x_test = dfx[filtered_entries].to_numpy()
 

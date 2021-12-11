@@ -17,7 +17,9 @@ class GradientDescent:
         self.costs = []
         self.prev_params = []
 
-    def _return(self):
+    def _return(self, old=False):
+        if old:
+            self.params = self.prev_params[-1]
         return self.params, self.prev_params, self.costs
 
     def solve(self):
@@ -26,7 +28,7 @@ class GradientDescent:
 
             values = tuple(list(x['value'] for x in self.params.values()))
             if values in self.prev_params:
-                return self._return()
+                return self._return(True)
             self.prev_params.append(values)
 
             print("GD Step {}".format(self.it))
