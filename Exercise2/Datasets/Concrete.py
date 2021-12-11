@@ -12,9 +12,9 @@ class Concrete(Dataset):
         super(Concrete, self).__init__(*args, **kwargs)
         self.read_csv()
         self.show_distributions("_raw")
-        self.remove_outliers()
         self.make_train_and_test_data()    
-        self.show_distributions("_clean")
+        self.remove_outliers()
+        # self.show_distributions("_clean")
         self.show_correlations()
           
 

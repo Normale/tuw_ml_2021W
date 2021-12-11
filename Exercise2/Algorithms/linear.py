@@ -6,14 +6,12 @@ class LinearRegression(Algorithm):  # Upgrade to LinearRegressionCV for automati
 
     def __init__(self, x, y, t):
         super().__init__(x, y, t)
-        print("---   INITIALIZING (LR)   ---")
         self.reg = LM.LinearRegression().fit(self.xTrain, self.yTrain)
 
     def get_regression(self):
         return self.reg
 
     def make_prediction(self, xTest):
-        print("---   PREDICTING (LR)   ---")
         return self.reg.predict(xTest)  # LR(positive=True) for only positive coef
 
 
@@ -31,7 +29,6 @@ class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic 
     """
     def __init__(self, x, y, t, alpha=0.5, l1_ratio=0.5):
         Algorithm.__init__(self, x, y, t)
-        # print("---   INITIALIZING (EN)   ---")
         self.alpha = alpha
         self.l1_ratio = l1_ratio
         self.reg = LM.ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=123).fit(self.xTrain, self.yTrain)
@@ -40,5 +37,4 @@ class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic 
         return self.reg
 
     def make_prediction(self, xTest):
-        # print("---   PREDICTING (EN)   ---")
         return self.reg.predict(xTest)

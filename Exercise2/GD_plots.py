@@ -6,7 +6,17 @@ from pathlib import Path
 import numpy as np
 
 
-with open(os.path.abspath('Datasets/Dump/EN'), 'rb+') as f:
+# name = 'Wine'
+# name = 'Concrete'
+name = 'Hotel'
+
+method = 'EN'
+# method = 'SVM'
+# method = 'RF'
+
+with open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'rb+') as f:
+    d_p = pickle.load(f)
+with open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'rb+') as f:
     d = pickle.load(f)
 
 x = []
@@ -26,14 +36,42 @@ for pred in d:
 # # Creating figure
 # fig = plt.figure(figsize=(10, 7))
 ax = plt.axes(projection="3d")
-
-ax.scatter3D(x, y, z)
-print(x)
-print(y)
-print(z)
+ax.scatter(x, y, z)
 plt.show()
-# plt.plot(z)
-# plt.show()
+
+
+i=0
+plt.figure(dpi=100)
+ax = plt.axes(projection="3d")
+
+for pred in d_p:
+    if i < 2:
+        i+=1
+        continue
+    x = []
+    y = []
+    z = []
+
+    for point in pred[0]:
+        x.append(point[0])
+        y.append(point[1])
+    for cost in pred[1]:
+        z.append(cost)
+        # x = np.log10(x)
+        # y = np.log10(y)
+
+    # # Creating figure
+    # fig = plt.figure(figsize=(10, 7))
+    ax.scatter(x, y, z, s=3, depthshade=False)
+ax.set_xlabel('alpha')
+ax.set_ylabel('l1_ratio')
+ax.set_zlabel('cost')
+plt.show()
+
+
+
+
+
 
 
 
