@@ -3,12 +3,11 @@ import copy
 
 
 class GradientDescent:
-    max_it = 300
     stop_grad = 0.0001
 
-    def __init__(self, f, params, x, y, s=0.1):
+    def __init__(self, f, params, x, y, s=0.1, max_it=300):
         self.s = s
-        self.params = params  # [(param1, param1range, )
+        self.params = params
         self.allowed_params()
         self.it = 0
         self.f = f
@@ -16,6 +15,7 @@ class GradientDescent:
         self.y = y
         self.costs = []
         self.prev_params = []
+        self.max_it = max_it
 
     def _return(self, old=False):
         if old:
@@ -32,7 +32,9 @@ class GradientDescent:
             self.prev_params.append(values)
 
             print("GD Step {}".format(self.it))
-            print("Params: alpha={}, l1_ratio={}".format(self.params['alpha']['value'], self.params['l1_ratio']['value']))
+            print("PARAMS:")
+            for param, val in self.params.items():
+                print("{}={}".format(param, val['value']))
 
             cost = self.f(self.x, self.y, self.params)
             self.costs.append(cost)

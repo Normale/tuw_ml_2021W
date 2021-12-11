@@ -19,11 +19,11 @@ class SVM(Algorithm):
     def __init__(self, x, y, t, kernel='linear', C=1.0, eps=0.1):
         super().__init__(x, y, t)
         self.kernel = kernel
-        self.reg = svm.SVR(kernel=kernel, C=C, epsilon=eps).fit(self.xTrain, self.yTrain.values.ravel())
+        self.reg = svm.SVR(kernel=kernel, C=C, epsilon=eps).fit(self.xTrain, self.yTrain.ravel())
 
     def make_regression(self, kernel='linear', C=1.0, eps=0.1):
         self.kernel = kernel
-        self.reg = svm.SVR(kernel=kernel, C=C, epsilon=eps).fit(self.xTrain, self.yTrain)
+        self.reg = svm.SVR(kernel=kernel, C=C, epsilon=eps).fit(self.xTrain, self.yTrain.ravel())
 
     def get_regression(self):
         return self.reg

@@ -91,8 +91,6 @@ class Dataset:
         self.y_test = dfy[filtered_entries].to_numpy()
         self.x_test = dfx[filtered_entries].to_numpy()
 
-        
-
     def one_hot_encode(self, columns):
         # Get one hot encoding of columns
         one_hot = pd.get_dummies(self.df[columns])
@@ -170,7 +168,7 @@ class Dataset:
         else:
             x_test, x_train, y_train = data
 
-        svm = SVM(x_test, x_train, y_train, kernel=kernel, C=C, eps=eps)  # Params: C, eps, kernel
+        svm = SVM(x_test, x_train, y_train, kernel=kernel, C=C['value'], eps=eps['value'])  # Params: C, eps, kernel
         svm_prediction = svm.make_prediction(x_test)
         if save is True:
             self.svm_prediction = svm_prediction
@@ -214,45 +212,64 @@ class Dataset:
 
     # Score
 
-    def getENScore(self, x, y, p):
-        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+    def getLRScore(self, x, y):
+        kf = model_selection.KFold(n_splits=5, random_state=123)  # Maybe set splits as variable
         score_list = []
         for train_index, test_index in kf.split(x):
             X_train, X_test = x[train_index], x[test_index]
-            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            Y_Train, Y_Test = y[train_index], y[test_index]
+            pred = self.calcLRPrediction(save=False, data=[X_test, X_train, Y_Train])
+            score = metrics.mean_absolute_percentage_error(Y_Test, pred)
+            score_list.append(score)
+        mean_score = np.mean(score_list)  # mean score
+        median_score = np.median(score_list)  # median score
+        return mean_score
+
+    def getENScore(self, x, y, p):
+        kf = model_selection.KFold(n_splits=5, random_state=123)  # Maybe set splits as variable
+        score_list = []
+        for train_index, test_index in kf.split(x):
+            X_train, X_test = x[train_index], x[test_index]
+            Y_Train, Y_Test = y[train_index], y[test_index]
             pred = self.calcENPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
             score = metrics.mean_absolute_percentage_error(Y_Test, pred)
             score_list.append(score)
-            mean_score = np.mean(score_list) # mean score
-            median_score = np.median(score_list) # median score
+        mean_score = np.mean(score_list)  # mean score
+        median_score = np.median(score_list)  # median score
         return mean_score
 
     def getRFScore(self, x, y, p):
-        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+        kf = model_selection.KFold(n_splits=5, random_state=123)  # Maybe set splits as variable
         score_list = []
         for train_index, test_index in kf.split(x):
             X_train, X_test = x[train_index], x[test_index]
-            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            Y_Train, Y_Test = y[train_index], y[test_index]
             pred = self.calcRFPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
             score = metrics.mean_squared_error(Y_Test, pred)
             score_list.append(score)
-            mean_score = np.mean(score_list) # mean score
-            median_score = np.median(score_list) # median score
+        mean_score = np.mean(score_list)  # mean score
+        median_score = np.median(score_list)  # median score
         return mean_score
 
     def getSVMScore(self, x, y, p):
-        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+        kf = model_selection.KFold(n_splits=5, random_state=123)  # Maybe set splits as variable
         score_list = []
         for train_index, test_index in kf.split(x):
             X_train, X_test = x[train_index], x[test_index]
-            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            Y_Train, Y_Test = y[train_index], y[test_index]
             pred = self.calcSVMPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
             score = metrics.mean_squared_error(Y_Test, pred)
             score_list.append(score)
-            mean_score = np.mean(score_list) # mean score
-            median_score = np.median(score_list) # median score
+        mean_score = np.mean(score_list)  # mean score
+        median_score = np.median(score_list)  # median score
         return mean_score
+
     # Search
+
+    def searchLR(self):
+        # Initialise parameters
+        self.calcLRPrediction(True)
+        score = self.getLRScore(self.x_train, self.y_train)
 
     def searchEN(self, paramList=EN.params, s=0.1):
         # Initialise parameters
@@ -275,7 +292,7 @@ class Dataset:
         gd = GD(f, paramList, x, y, s=s)
         param_sol, param_path, cost_path = gd.solve()
 
-        best_prediction = self.calcENPrediction(param_sol)
+        best_prediction = self.calcRFPrediction(param_sol)
         cost = f(x, y, paramList)
         return param_sol, cost, param_path, cost_path
         # return solution_params, best_prediction, cost
@@ -285,11 +302,11 @@ class Dataset:
         x = self.x_train
         y = self.y_train
         f = self.getSVMScore
-        gd = GD(f, paramList, x, y, s=s)
+        gd = GD(f, paramList, x, y, s=s, max_it=100)
         param_sol, param_path, cost_path = gd.solve()
         print(param_path)
 
-        best_prediction = self.calcENPrediction(param_sol)
+        best_prediction = self.calcSVMPrediction(param_sol)
         cost = f(x, y, paramList)
         return param_sol, cost, param_path, cost_path
         # return solution_params, best_prediction, cost
@@ -356,14 +373,14 @@ class Dataset:
         gridStates_c = np.logspace(-3, 3, num=7, base=2).copy()
         gridStates_eps = [0.5]
         gridStates_eps.extend(np.logspace(0, -3, num=4, base=10).copy())
-        for s in [1, 0.1, 0.01, 0.001]:
+        for s in [0.1, 0.01, 0.001]:
             print("-------------------------------------")
             print("S:{}".format(s))
             print("-------------------------------------")
             for c in gridStates_c:
                 for eps in gridStates_eps:
-                    par = EN.params
-                    par['c']['value'] = c
+                    par = SVM.params
+                    par['C']['value'] = c
                     par['eps']['value'] = eps
                     sol, cost, param_path, cost_path = self.searchSVM(par, s=s)
 
