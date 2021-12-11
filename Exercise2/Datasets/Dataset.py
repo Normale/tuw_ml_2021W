@@ -215,10 +215,43 @@ class Dataset:
     # Score
 
     def getENScore(self, x, y, p):
-        X_train, X_test, Y_Train, Y_Test = model_selection.train_test_split(x, y, test_size=0.2, random_state=25)
-        pred = self.calcENPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
-        return metrics.mean_absolute_percentage_error(Y_Test, pred)
+        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+        score_list = []
+        for train_index, test_index in kf.split(x):
+            X_train, X_test = x[train_index], x[test_index]
+            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            pred = self.calcENPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
+            score = metrics.mean_absolute_percentage_error(Y_Test, pred)
+            score_list.append(score)
+            mean_score = np.mean(score_list) # mean score
+            median_score = np.median(score_list) # median score
+        return mean_score
 
+    def getRFScore(self, x, y, p):
+        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+        score_list = []
+        for train_index, test_index in kf.split(x):
+            X_train, X_test = x[train_index], x[test_index]
+            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            pred = self.calcRFPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
+            score = metrics.mean_squared_error(Y_Test, pred)
+            score_list.append(score)
+            mean_score = np.mean(score_list) # mean score
+            median_score = np.median(score_list) # median score
+        return mean_score
+
+    def getSVMScore(self, x, y, p):
+        kf = model_selection.KFold(n_splits=5) # Maybe set splits as variable
+        score_list = []
+        for train_index, test_index in kf.split(x):
+            X_train, X_test = x[train_index], x[test_index]
+            Y_Train, Y_Test = y.iloc[train_index, :], y.iloc[test_index, :]
+            pred = self.calcSVMPrediction(params=p, save=False, data=[X_test, X_train, Y_Train])
+            score = metrics.mean_squared_error(Y_Test, pred)
+            score_list.append(score)
+            mean_score = np.mean(score_list) # mean score
+            median_score = np.median(score_list) # median score
+        return mean_score
     # Search
 
     def searchEN(self, paramList=EN.params, s=0.1):
