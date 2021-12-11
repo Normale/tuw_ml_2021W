@@ -3,6 +3,8 @@ from sklearn import svm
 
 
 class SVM(Algorithm):
+    params = {'C': {'value': 100, 'type': 'float', 'min': 10**-4, 'max': 10**4, 'e': 10**-8},
+              'eps': {'value': 0.1, 'type': 'float', 'min': 10**-4, 'max': 10, 'e': 10**-8}}
 
     """
     SCALE YOUR DATA FOR SVM!!!!
@@ -17,7 +19,6 @@ class SVM(Algorithm):
     def __init__(self, x, y, t, kernel='linear', C=1.0, eps=0.1):
         super().__init__(x, y, t)
         self.kernel = kernel
-        print("---   INITIALIZING (SVM) with " + kernel + " kernel ---")
         self.reg = svm.SVR(kernel=kernel, C=C, epsilon=eps).fit(self.xTrain, self.yTrain.values.ravel())
 
     def make_regression(self, kernel='linear', C=1.0, eps=0.1):
@@ -28,5 +29,4 @@ class SVM(Algorithm):
         return self.reg
 
     def make_prediction(self, xTest):
-        print("---   PREDICTING (SVM) with kernel " + self.kernel + "  ---")
         return self.reg.predict(xTest)  # LR(positive=True) for only positive coef

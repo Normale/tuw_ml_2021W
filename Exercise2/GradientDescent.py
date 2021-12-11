@@ -14,29 +14,37 @@ class GradientDescent:
         self.f = f
         self.x = x
         self.y = y
-        self.cost = []
-        self.prev_params = {}
+        self.costs = []
+        self.prev_params = []
+
+    def _return(self):
+        return self.params, self.prev_params, self.costs
 
     def solve(self):
         while self.it < self.max_it:
             self.it += 1
 
+            values = tuple(list(x['value'] for x in self.params.values()))
+            if values in self.prev_params:
+                return self._return()
+            self.prev_params.append(values)
+
             print("GD Step {}".format(self.it))
             print("Params: alpha={}, l1_ratio={}".format(self.params['alpha']['value'], self.params['l1_ratio']['value']))
 
             cost = self.f(self.x, self.y, self.params)
-            self.cost.append(cost)
+            self.costs.append(cost)
             print("Cost = {}".format(cost))
 
             gradient = self.get_gradient()
             print("Gradient = {}".format(gradient))
             
             if self.stop_criterium(gradient):
-                return self.params, self.cost
+                return self._return()
             self.allowed_params()
 
             self.param_subtract(gradient)
-        return self.params, self.cost
+        return self._return()
 
     def param_subtract(self, subt: dict):
         for param, val in self.params.items():

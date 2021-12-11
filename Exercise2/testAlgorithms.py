@@ -21,16 +21,23 @@ if False:
     name = input("Which state do you want to load?")
     dataset = pickle.load(open('Datasets/Dump/'+name, 'rb'))
 else:
-    # TODO: implement all models at once (use dictionaries and keys)
     filepath = Path("Datasets/Raw") / "winequality-red.csv"
-    dataset = Wine(filepath)
-    # fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
+    fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
+    fp3 = Path("Datasets/Raw") / "hotels.csv"
+
+    # dataset = Wine(filepath)
+    # name = 'Wine'
+    #
     # dataset = Concrete(fp2)
-    # fp3 = Path("Datasets/Raw") / "hotels.csv"
-    # dataset = Hotel(fp3)
-# #Close the program 
-# import sys
-# sys.exit(100)
+    # name = 'Concrete'
+    #
+    dataset = Hotel(fp3)
+    name = 'Hotel'
+
+    method = 'EN'
+    # method = 'SVM'
+    # method = 'RF'
+
 
 """------------------- PREDICT STATE ----------------------"""
 #
@@ -40,14 +47,16 @@ else:
 # svm_prediction = dataset.getSVMPrediction()
 
 """------------------- GRADIENT DESCENT ----------------------"""
-gd = dataset.full_search_EN()
-# gd = dataset.searchEN()
-# score = dataset.getENScore(dataset.x_train, dataset.y_train, gd[0])
+
+best_sol, all_sol, all_paths = dataset.full_search_EN()
+# best_sol, all_sol, all_paths = dataset.full_search_RF()
+# best_sol, all_sol, all_paths = dataset.full_search_SVM()
+
 print("FINISHED")
-print(gd[0])
-all_sol = gd[1]
-file = open(os.path.abspath('Datasets/Dump/EN'), 'wb+')
+file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
+paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
 pickle.dump(all_sol, file)
+pickle.dump(all_paths, paths_file)
 
 
 """----------------------- PLOTS ---------------------------"""

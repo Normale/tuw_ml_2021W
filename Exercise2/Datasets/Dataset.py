@@ -12,6 +12,7 @@ from pandas.api.types import is_numeric_dtype
 import pandas as pd
 from sklearn import model_selection , metrics
 import copy
+import pickle
 
 
 class Dataset:
@@ -226,21 +227,50 @@ class Dataset:
         y = self.y_train
         f = self.getENScore
         gd = GD(f, paramList, x, y, s=s)
-        solution_params, costs = gd.solve()
-        plt.plot(costs)
-        plt.savefig('EN_search.png')
-        best_prediction = self.calcENPrediction(solution_params)
-        cost = self.getENScore(x, y, paramList)
-        return solution_params, cost
+        param_sol, param_path, cost_path = gd.solve()
+
+        best_prediction = self.calcENPrediction(param_sol)
+        cost = f(x, y, paramList)
+        return param_sol, cost, param_path, cost_path
+        # return solution_params, best_prediction, cost
+
+    def searchRF(self, paramList=RF.params, s=0.1):
+        # Initialise parameters
+        x = self.x_train
+        y = self.y_train
+        f = self.getRFScore
+        gd = GD(f, paramList, x, y, s=s)
+        param_sol, param_path, cost_path = gd.solve()
+
+        best_prediction = self.calcENPrediction(param_sol)
+        cost = f(x, y, paramList)
+        return param_sol, cost, param_path, cost_path
+        # return solution_params, best_prediction, cost
+
+    def searchSVM(self, paramList=SVM.params, s=0.1):
+        # Initialise parameters
+        x = self.x_train
+        y = self.y_train
+        f = self.getSVMScore
+        gd = GD(f, paramList, x, y, s=s)
+        param_sol, param_path, cost_path = gd.solve()
+        print(param_path)
+
+        best_prediction = self.calcENPrediction(param_sol)
+        cost = f(x, y, paramList)
+        return param_sol, cost, param_path, cost_path
         # return solution_params, best_prediction, cost
 
     def full_search_EN(self):
-        best_sol = self.searchEN()
+        initial_search = self.searchEN()
+        best_sol = (initial_search[0], initial_search[1])
         all_sol = []
+        all_paths = [initial_search[2], initial_search[3]]
+
         gridStates_alpha = np.logspace(-2, 2, num=5, base=2).copy()
-        gridStates_l1 = [0.5]
+        gridStates_l1 = [0.5, 0.3]
         gridStates_l1.extend(np.logspace(-1, -3, num=3, base=10).copy())
-        for s in [0.1, 0.01]:
+        for s in [1, 0.1, 0.01, 0.001]:
             print("-------------------------------------")
             print("S:{}".format(s))
             print("-------------------------------------")
@@ -249,10 +279,65 @@ class Dataset:
                     par = EN.params
                     par['alpha']['value'] = alpha
                     par['l1_ratio']['value'] = l1
-                    sol = self.searchEN(par, s=s)
+                    sol, cost, param_path, cost_path = self.searchEN(par, s=s)
+
+                    all_paths.append((param_path, cost_path))
+
                     print(sol)
-                    if sol[1] > best_sol[1]:
-                    # if sol[2] > best_sol[2]:
-                            best_sol = copy.deepcopy(sol)
-                    all_sol.append(copy.deepcopy(sol))
-        return best_sol, all_sol
+                    if cost > best_sol[1]:
+                            best_sol = (copy.deepcopy(sol), cost)
+                    all_sol.append((copy.deepcopy(sol), cost))
+        return best_sol, all_sol, all_paths
+
+    def full_search_RF(self):
+        initial_search = self.searchRF()
+        best_sol = (initial_search[0], initial_search[1])
+        all_sol = []
+        all_paths = [initial_search[2], initial_search[3]]
+
+        gridStates_n = [10, 40, 160, 840]
+
+        for s in [1, 0.1, 0.01, 0.001]:
+            print("-------------------------------------")
+            print("S:{}".format(s))
+            print("-------------------------------------")
+            for n in gridStates_n:
+                par = RF.params
+                par['n']['value'] = n
+                sol, cost, param_path, cost_path = self.searchRF(par, s=s)
+
+                all_paths.append((param_path, cost_path))
+
+                print(sol)
+                if cost > best_sol[1]:
+                        best_sol = (copy.deepcopy(sol), cost)
+                all_sol.append((copy.deepcopy(sol), cost))
+        return best_sol, all_sol, all_paths
+
+    def full_search_SVM(self):
+        initial_search = self.searchSVM()
+        best_sol = (initial_search[0], initial_search[1])
+        all_sol = []
+        all_paths = [initial_search[2], initial_search[3]]
+
+        gridStates_c = np.logspace(-3, 3, num=7, base=2).copy()
+        gridStates_eps = [0.5]
+        gridStates_eps.extend(np.logspace(0, -3, num=4, base=10).copy())
+        for s in [1, 0.1, 0.01, 0.001]:
+            print("-------------------------------------")
+            print("S:{}".format(s))
+            print("-------------------------------------")
+            for c in gridStates_c:
+                for eps in gridStates_eps:
+                    par = EN.params
+                    par['c']['value'] = c
+                    par['eps']['value'] = eps
+                    sol, cost, param_path, cost_path = self.searchSVM(par, s=s)
+
+                    all_paths.append((param_path, cost_path))
+
+                    print(sol)
+                    if cost > best_sol[1]:
+                            best_sol = (copy.deepcopy(sol), cost)
+                    all_sol.append((copy.deepcopy(sol), cost))
+        return best_sol, all_sol, all_paths
