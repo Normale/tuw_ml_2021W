@@ -6,6 +6,9 @@ import os
 import pickle
 from pathlib import Path
 import numpy as np
+from Exercise2.Algorithms.svm import SVM
+from Exercise2.AutoML import AutoML as AML
+
 
 # Temporary solution due to discrepancies between IDEs
 if "Exercise2" not in os.getcwd(): 
@@ -25,14 +28,14 @@ else:
     fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
     fp3 = Path("Datasets/Raw") / "hotels.csv"
 
-    dataset = Wine(filepath)
-    name = 'Wine'
+    # dataset = Wine(filepath)
+    # name = 'Wine'
     #
     # dataset = Concrete(fp2)
     # name = 'Concrete'
     #
-    # dataset = Hotel(fp3)
-    # name = 'Hotel'
+    dataset = Hotel(fp3)
+    name = 'Hotel'
 
     # method = 'EN'
     # method = 'RF'
@@ -50,13 +53,21 @@ else:
 
 # best_sol, all_sol, all_paths = dataset.full_search_EN()
 # best_sol, all_sol, all_paths = dataset.full_search_RF()
-best_sol, all_sol, all_paths = dataset.full_search_SVM()
+# best_sol, all_sol, all_paths = dataset.full_search_SVM()
+
+aml = AML(dataset)
+aml.find_best_regressor()
+prediction = aml.best_prediction()
+score = aml.best_prediction_score()
+
+print(prediction)
+print(score)
 
 print("FINISHED")
-file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
-paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
-pickle.dump(all_sol, file)
-pickle.dump(all_paths, paths_file)
+# file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
+# paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
+# pickle.dump(all_sol, file)
+# pickle.dump(all_paths, paths_file)
 
 
 """----------------------- PLOTS ---------------------------"""

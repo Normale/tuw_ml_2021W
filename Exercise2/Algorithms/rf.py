@@ -12,7 +12,7 @@ class RFR(Algorithm):
     def __init__(self, x, y, t, n=25):
         super().__init__(x, y, t)
         self.reg = rfr(n_estimators=n, random_state=123)\
-            .fit(self.xTrain, self.yTrain.values.ravel())
+            .fit(self.xTrain, self.yTrain.ravel())
 
     def get_regression(self):
         return self.reg

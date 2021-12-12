@@ -3,7 +3,7 @@ import copy
 
 
 class GradientDescent:
-    stop_grad = 0.0001
+    stop_grad = 0.00001
 
     def __init__(self, f, params, x, y, s=0.1, max_it=300):
         self.s = s
@@ -86,7 +86,7 @@ class GradientDescent:
 
             f_plus = self.f(self.x, self.y, plus)
             f_minus = self.f(self.x, self.y, minus)
-            # print("cost diff {} = {}".format(param, f_plus - f_minus))
+            print("cost diff {} - {}".format(f_plus, f_minus))
 
             diff = (f_plus - f_minus) / (2 * val['e'])
             grad[param] = diff
@@ -95,9 +95,8 @@ class GradientDescent:
     def allowed_params(self):
         for name, param in self.params.items():
             if param['min'] <= param['value'] <= param['max']:
-                if param['type'] == 'int' and param['value'].is_integer():
-                    return True
+                if param['type'] == 'int' and not isinstance(param['value'], int):
+                    return False
                 return True
 
-        print(self.params)
         raise Exception("These parameters are not allowed!")

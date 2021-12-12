@@ -4,14 +4,15 @@ import os
 import pickle
 from pathlib import Path
 import numpy as np
+import time
 
 
-# name = 'Wine'
+name = 'Wine'
 # name = 'Concrete'
-name = 'Hotel'
+# name = 'Hotel'
 
-method = 'EN'
-# method = 'SVM'
+# method = 'EN'
+method = 'SVM'
 # method = 'RF'
 
 with open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'rb+') as f:
@@ -19,25 +20,25 @@ with open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'rb+') as
 with open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'rb+') as f:
     d = pickle.load(f)
 
-x = []
-y = []
-z = []
-
-for pred in d:
-    print(pred)
-    x.append(pred[0]['alpha']['value'])
-    y.append(pred[0]['l1_ratio']['value'])
-    z.append(pred[1])
-
-
-# x = np.log10(x)
-# y = np.log10(y)
-
-# # Creating figure
-# fig = plt.figure(figsize=(10, 7))
-ax = plt.axes(projection="3d")
-ax.scatter(x, y, z)
-plt.show()
+# x = []
+# y = []
+# z = []
+#
+# for pred in d:
+#     print(pred)
+#     x.append(pred[0]['alpha']['value'])
+#     y.append(pred[0]['l1_ratio']['value'])
+#     z.append(pred[1])
+#
+#
+# # x = np.log10(x)
+# # y = np.log10(y)
+#
+# # # Creating figure
+# # fig = plt.figure(figsize=(10, 7))
+# ax = plt.axes(projection="3d")
+# ax.scatter(x, y, z)
+# plt.show()
 
 
 i=0
@@ -61,11 +62,14 @@ for pred in d_p:
         # y = np.log10(y)
 
     # # Creating figure
-    # fig = plt.figure(figsize=(10, 7))
-    ax.scatter(x, y, z, s=3, depthshade=False)
+    # fig = plt.figure()
+    ax.plot(x, y, z)
+    # ax.scatter(x, y, z, s=3, depthshade=False)
 ax.set_xlabel('alpha')
 ax.set_ylabel('l1_ratio')
 ax.set_zlabel('cost')
+plt.xlim(0,10)
+plt.ylim(0,10)
 plt.show()
 
 

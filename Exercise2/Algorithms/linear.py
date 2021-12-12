@@ -18,7 +18,7 @@ class LinearRegression(Algorithm):  # Upgrade to LinearRegressionCV for automati
 class ElasticNetRegression(Algorithm):  # Upgrade to ElasticNetCV for automatic CV!
 
     params = {'alpha': {'value': 0.5, 'type': 'float', 'min': 10**-8, 'max': 20, 'e': 10**-10},
-              'l1_ratio': {'value': 0.05, 'type': 'float', 'min': 10**-7, 'max': 1, 'e': 10**-10}}
+              'l1_ratio': {'value': 0.05, 'type': 'float', 'min': 10**-6, 'max': 1, 'e': 10**-10}}
     # TODO: Iterate alpha logarithmically
 
     """

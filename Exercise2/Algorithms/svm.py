@@ -3,8 +3,8 @@ from sklearn import svm
 
 
 class SVM(Algorithm):
-    params = {'C': {'value': 100, 'type': 'float', 'min': 10**-4, 'max': 10**4, 'e': 10**-8},
-              'eps': {'value': 0.1, 'type': 'float', 'min': 10**-4, 'max': 10, 'e': 10**-8}}
+    params = {'C': {'value': 100, 'type': 'float', 'min': 10**-4, 'max': 10**4, 'e': 10**-5},
+              'eps': {'value': 0.1, 'type': 'float', 'min': 10**-2, 'max': 10, 'e': 10**-3}}
 
     """
     SCALE YOUR DATA FOR SVM!!!!
