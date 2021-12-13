@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.linear_model import LassoLarsCV
+from sklearn.ensemble import AdaBoostRegressor, ExtraTreesRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator
 from tpot.export_utils import set_param_recursive
@@ -13,10 +13,11 @@ features = tpot_data.drop('target', axis=1)
 training_features, testing_features, training_target, testing_target = \
             train_test_split(features, tpot_data['target'], random_state=1)
 
-# Average CV score on the training set was: -1.1086236171111754
+# Average CV score on the training set was: -0.5622257735628805
 exported_pipeline = make_pipeline(
-    StackingEstimator(estimator=GradientBoostingRegressor(alpha=0.9, learning_rate=0.01, loss="huber", max_depth=2, max_features=0.35000000000000003, min_samples_leaf=19, min_samples_split=15, n_estimators=100, subsample=0.8)),
-    LassoLarsCV(normalize=True)
+    StackingEstimator(estimator=AdaBoostRegressor(learning_rate=0.5, loss="linear", n_estimators=100)),
+    StackingEstimator(estimator=ExtraTreesRegressor(bootstrap=False, max_features=0.35000000000000003, min_samples_leaf=16, min_samples_split=12, n_estimators=100)),
+    KNeighborsRegressor(n_neighbors=28, p=1, weights="distance")
 )
 # Fix random state for all the steps in exported pipeline
 set_param_recursive(exported_pipeline.steps, 'random_state', 1)

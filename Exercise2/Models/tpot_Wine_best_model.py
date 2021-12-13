@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator
 from tpot.export_utils import set_param_recursive
@@ -13,10 +12,10 @@ features = tpot_data.drop('target', axis=1)
 training_features, testing_features, training_target, testing_target = \
             train_test_split(features, tpot_data['target'], random_state=1)
 
-# Average CV score on the training set was: -0.550023639246366
+# Average CV score on the training set was: -0.5977316854871582
 exported_pipeline = make_pipeline(
-    StackingEstimator(estimator=ExtraTreesRegressor(bootstrap=True, max_features=0.55, min_samples_leaf=4, min_samples_split=7, n_estimators=100)),
-    KNeighborsRegressor(n_neighbors=47, p=2, weights="distance")
+    StackingEstimator(estimator=ExtraTreesRegressor(bootstrap=False, max_features=0.35000000000000003, min_samples_leaf=19, min_samples_split=3, n_estimators=100)),
+    ExtraTreesRegressor(bootstrap=True, max_features=0.9500000000000001, min_samples_leaf=7, min_samples_split=16, n_estimators=100)
 )
 # Fix random state for all the steps in exported pipeline
 set_param_recursive(exported_pipeline.steps, 'random_state', 1)
