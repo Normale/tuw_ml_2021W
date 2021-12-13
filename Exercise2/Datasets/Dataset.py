@@ -96,6 +96,8 @@ class Dataset:
     def one_hot_encode(self, columns):
         # Get one hot encoding of columns
         one_hot = pd.get_dummies(self.df[columns])
+        one_hot = one_hot.iloc[: , :-1]
+
         # Drop encoded columns 
         tmp = self.df.drop(columns, axis=1)
         # Join encoding 
