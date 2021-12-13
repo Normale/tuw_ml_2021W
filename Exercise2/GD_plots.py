@@ -63,13 +63,14 @@ for pred in d_p:
 
     # # Creating figure
     # fig = plt.figure()
-    ax.plot(x, y, z)
-    # ax.scatter(x, y, z, s=3, depthshade=False)
-ax.set_xlabel('alpha')
-ax.set_ylabel('l1_ratio')
+    # ax.plot(x, y, z)
+    ax.scatter(x, y, z, s=3, depthshade=False)
+# ax.set_xlabel('alpha')
+# ax.set_ylabel('l1_ratio')
 ax.set_zlabel('cost')
+ax.set_zlim(0.38,0.44)
 plt.xlim(0,10)
-plt.ylim(0,10)
+plt.ylim(0,4)
 plt.show()
 
 

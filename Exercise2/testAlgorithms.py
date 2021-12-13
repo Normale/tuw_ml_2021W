@@ -28,14 +28,14 @@ else:
     fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
     fp3 = Path("Datasets/Raw") / "hotels.csv"
 
-    # dataset = Wine(filepath)
-    # name = 'Wine'
+    dataset = Wine(filepath)
+    name = 'Wine'
     #
     # dataset = Concrete(fp2)
     # name = 'Concrete'
     #
-    dataset = Hotel(fp3)
-    name = 'Hotel'
+    # dataset = Hotel(fp3)
+    # name = 'Hotel'
 
     # method = 'EN'
     # method = 'RF'
@@ -59,6 +59,7 @@ aml = AML(dataset)
 aml.find_best_regressor()
 prediction = aml.best_prediction()
 score = aml.best_prediction_score()
+aml.dump_leaderboard()
 
 # print(prediction)
 # print(score)

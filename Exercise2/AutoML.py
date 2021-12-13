@@ -1,6 +1,7 @@
 import os
 import json
 from sklearn import metrics
+import random
 
 class AutoML:
 
@@ -45,12 +46,9 @@ class AutoML:
         return self.leaderboard
 
     def dump_leaderboard(self):
-        counter_file = open(os.path.abspath('GD_Dump/i_counter'), 'w+')
-        i = int(counter_file.readline())
-        i += 1
+        i = random.randint()
         file = open(os.path.abspath('GD_Dump/Leaderboard_{}'.format(i)), 'w+')
         file.write(json.dumps(self.leaderboard))
-        counter_file.write(str(i))
 
 
 
