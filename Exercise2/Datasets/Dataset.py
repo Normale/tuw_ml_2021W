@@ -98,9 +98,9 @@ class Dataset:
         one_hot = pd.get_dummies(self.df[columns])
         one_hot = one_hot.iloc[: , :-1]
 
-        # Drop encoded columns 
+        # Drop encoded columns
         tmp = self.df.drop(columns, axis=1)
-        # Join encoding 
+        # Join encoding
         self.df = tmp.join(one_hot)
 
     # Linear Regressors
@@ -346,9 +346,9 @@ class Dataset:
         all_sol = []
         all_paths = [initial_search[2], initial_search[3]]
 
-        gridStates_n = [10, 40, 160, 840]
+        gridStates_n = [10, 40, 100, 200]
 
-        for s in [1, 0.1, 0.01, 0.001]:
+        for s in [10000, 1000, 100]:
             print("-------------------------------------")
             print("S:{}".format(s))
             print("-------------------------------------")
@@ -397,8 +397,10 @@ class Dataset:
         return best_sol, all_sol, all_paths
 
     def dump(self, all_sol, all_paths, name, method):
+        print("dumping...")
         file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
         paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
         pickle.dump(all_sol, file)
         pickle.dump(all_paths, paths_file)
+        print("dumped...")
 

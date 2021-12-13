@@ -28,11 +28,11 @@ else:
     fp2 = Path("Datasets/Raw") / "ConcreteStrengthData.csv"
     fp3 = Path("Datasets/Raw") / "hotels.csv"
 
-    dataset = Wine(filepath)
-    name = 'Wine'
+    # dataset = Wine(filepath)
+    # name = 'Wine'
     #
-    # dataset = Concrete(fp2)
-    # name = 'Concrete'
+    dataset = Concrete(fp2)
+    name = 'Concrete'
     #
     # dataset = Hotel(fp3)
     # name = 'Hotel'
@@ -52,19 +52,24 @@ else:
 """------------------- GRADIENT DESCENT ----------------------"""
 
 # best_sol, all_sol, all_paths = dataset.full_search_EN()
-# best_sol, all_sol, all_paths = dataset.full_search_RF()
-# best_sol, all_sol, all_paths = dataset.full_search_SVM()
+best_sol, all_sol, all_paths = dataset.full_search_RF(dataset.get_name())
+# best_sol, all_sol, all_paths = dataset.full_search_SVM('SVM')
 
-aml = AML(dataset)
-aml.find_best_regressor()
-prediction = aml.best_prediction()
-score = aml.best_prediction_score()
-aml.dump_leaderboard()
+# dataset = Wine(filepath)
+# aml = AML(dataset)
+
+# aml.find_best_regressor()
+# prediction = aml.best_prediction()
+# score = aml.best_prediction_score()
+
+print("FINISHED")
+
+
+# aml.dump_leaderboard()
 
 # print(prediction)
 # print(score)
 
-print("FINISHED")
 
 
 """----------------------- PLOTS ---------------------------"""
