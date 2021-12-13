@@ -1,4 +1,3 @@
-from tpot import TPOTRegressor
 from sklearn.model_selection import RepeatedKFold
 from Exercise2.Datasets.Wine import Wine
 from Exercise2.Datasets.Concrete import Concrete
@@ -8,7 +7,10 @@ import os
 import pickle
 from pathlib import Path
 import numpy as np
+from tpot import TPOTRegressor
 import tpot
+import autosklearn.regression
+import sklearn.metrics
 
 # Temporary solution due to discrepancies between IDEs
 if "Exercise2" not in os.getcwd():
@@ -25,20 +27,36 @@ datasets.append(Concrete(fp2))
 fp3 = Path("Datasets/Raw") / "hotels.csv"
 datasets.append(Hotel(fp3))
 
-for dataset in datasets:
-    X = dataset.x_train
-    y = dataset.y_train.ravel()
-    cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+# for dataset in datasets:
+#     X = dataset.x_train
+#     y = dataset.y_train.ravel()   
+#     cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
 
-    model = TPOTRegressor(generations=5, population_size=50, scoring='neg_root_mean_squared_error',
-                        cv=cv, verbosity=3, random_state=1, n_jobs=-1)
-    model.fit(X, y)
-    print("MODEL SCORE", model.score(dataset.x_test, dataset.y_test))
-    model.export(f'Models/tpot_{dataset.get_name()}_best_model.py')
-
+#     model = TPOTRegressor(generations=50, population_size=50, scoring='neg_root_mean_squared_error',
+#                         cv=cv, verbosity=3, random_state=1, n_jobs=-1)
+#     model.fit(X, y)
+#     print("MODEL SCORE", model.score(dataset.x_test, dataset.y_test))
+#     model.export(f'Models/tpot_{dataset.get_name()}_best_model.py')
 # Wine: MODEL SCORE -0.5907459172139811
 # Conrete: MODEL SCORE -5.432604661167217
 # Hotels: MODEL SCORE -1.0863806416605724
 
 
 # ----- SCIKIT SOLUTION -----
+for dataset in datasets:
+    X = dataset.x_train
+    y = dataset.y_train.ravel()
+    automl = autosklearn.regression.AutoSklearnRegressor(
+    time_left_for_this_task=600,
+    per_run_time_limit=100,
+    resampling_strategy = 'cv',
+    resampling_strategy_arguments={'folds': 5},
+    metric=autosklearn.metrics.mean_squared_error,
+    tmp_folder='Models_sk',
+)
+    automl.fit(X, y, dataset_name=dataset.get_name())
+    predictions = automl.predict(dataset.x_test)
+    print("Score reached:", sklearn.metrics.mean_squared_error(
+        dataset.y_test, predictions))
+    print(automl.leaderboard())
+    print(automl.show_models())
