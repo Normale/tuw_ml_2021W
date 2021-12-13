@@ -15,10 +15,10 @@ class AutoML:
         best_sol_RF = self.dataset.full_search_RF(self.dataset.get_name())  # best_sol, all_sol, all_paths with best_sol = (params, score)
         best_sol_SVM = self.dataset.full_search_SVM(self.dataset.get_name())  # best_sol, all_sol, all_paths with best_sol = (params, score)
 
-        self.leaderboard['LR'] = {'Score': best_sol_LR[0], 'Params': None}
-        self.leaderboard['EN'] = {'Score': best_sol_EN[0], 'Params': best_sol_EN[1]}
-        self.leaderboard['RF'] = {'Score': best_sol_RF[0], 'Params': best_sol_RF[1]}
-        self.leaderboard['SVM'] = {'Score': best_sol_SVM[0], 'Params': best_sol_SVM[1]}
+        self.leaderboard['LR'] = {'Score': best_sol_LR, 'Params': None}
+        self.leaderboard['EN'] = {'Score': best_sol_EN[0][1], 'Params': best_sol_EN[1][0]}
+        self.leaderboard['RF'] = {'Score': best_sol_RF[0][1], 'Params': best_sol_RF[1][0]}
+        self.leaderboard['SVM'] = {'Score': best_sol_SVM[0][1], 'Params': best_sol_SVM[1][0]}
 
         maxx = min([best_sol_EN[0][1], best_sol_LR, best_sol_RF[0][1], best_sol_SVM[0][1]])
         if maxx == best_sol_LR:
