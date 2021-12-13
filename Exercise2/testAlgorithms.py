@@ -39,7 +39,7 @@ else:
 
     # method = 'EN'
     # method = 'RF'
-    method = 'SVM'
+    # method = 'SVM'
 
 
 """------------------- PREDICT STATE ----------------------"""
@@ -60,14 +60,10 @@ aml.find_best_regressor()
 prediction = aml.best_prediction()
 score = aml.best_prediction_score()
 
-print(prediction)
-print(score)
+# print(prediction)
+# print(score)
 
 print("FINISHED")
-# file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
-# paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
-# pickle.dump(all_sol, file)
-# pickle.dump(all_paths, paths_file)
 
 
 """----------------------- PLOTS ---------------------------"""

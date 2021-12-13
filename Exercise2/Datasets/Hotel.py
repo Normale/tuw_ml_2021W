@@ -43,8 +43,5 @@ class Hotel(Dataset):
         self.x_train = X_train
         self.x_test = X_test
 
-
-
-    @staticmethod
-    def get_name():
+    def get_name(self):
         return 'Housing'

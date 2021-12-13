@@ -1,3 +1,5 @@
+import os
+
 from Exercise2.Algorithms.linear import LinearRegression as Lra
 from Exercise2.Algorithms.linear import ElasticNetRegression as EN
 from Exercise2.Algorithms.svm import SVM
@@ -305,7 +307,8 @@ class Dataset:
         cost = f(x, y, paramList)
         return param_sol, cost, param_path, cost_path
 
-    def full_search_EN(self):
+    def full_search_EN(self, method):
+        name = 'EN'
         initial_search = self.searchEN()
         best_sol = (initial_search[0], initial_search[1])
         all_sol = []
@@ -328,12 +331,14 @@ class Dataset:
                     all_paths.append((param_path, cost_path))
 
                     print(sol)
-                    if cost > best_sol[1]:
+                    if cost < best_sol[1]:
                             best_sol = (copy.deepcopy(sol), cost)
                     all_sol.append((copy.deepcopy(sol), cost))
+        self.dump(all_sol, all_paths, name, method)
         return best_sol, all_sol, all_paths
 
-    def full_search_RF(self):
+    def full_search_RF(self, method):
+        name = 'RF'
         initial_search = self.searchRF()
         best_sol = (initial_search[0], initial_search[1])
         all_sol = []
@@ -353,12 +358,14 @@ class Dataset:
                 all_paths.append((param_path, cost_path))
 
                 print(sol)
-                if cost > best_sol[1]:
+                if cost < best_sol[1]:
                         best_sol = (copy.deepcopy(sol), cost)
                 all_sol.append((copy.deepcopy(sol), cost))
+        self.dump(all_sol, all_paths, name, method)
         return best_sol, all_sol, all_paths
 
-    def full_search_SVM(self):
+    def full_search_SVM(self, method):
+        name = 'SVM'
         initial_search = self.searchSVM()
         best_sol = (initial_search[0], initial_search[1])
         all_sol = []
@@ -381,7 +388,15 @@ class Dataset:
                     all_paths.append((param_path, cost_path))
 
                     print(sol)
-                    if cost > best_sol[1]:
+                    if cost < best_sol[1]:
                             best_sol = (copy.deepcopy(sol), cost)
                     all_sol.append((copy.deepcopy(sol), cost))
+        self.dump(all_sol, all_paths, name, method)
         return best_sol, all_sol, all_paths
+
+    def dump(self, all_sol, all_paths, name, method):
+        file = open(os.path.abspath('GD_Dump/{}_{}_sol'.format(name, method)), 'wb+')
+        paths_file = open(os.path.abspath('GD_Dump/{}_{}_paths'.format(name, method)), 'wb+')
+        pickle.dump(all_sol, file)
+        pickle.dump(all_paths, paths_file)
+

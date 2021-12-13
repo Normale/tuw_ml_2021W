@@ -36,7 +36,5 @@ class Wine(Dataset):
         self.x_train = sc.fit_transform(X_train)
         self.x_test = sc.fit_transform(X_test)
 
-
-    @staticmethod
-    def get_name():
+    def get_name(self):
         return 'Wine'
