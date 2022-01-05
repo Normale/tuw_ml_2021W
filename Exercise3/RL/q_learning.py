@@ -2,9 +2,10 @@ import numpy as np
 from .environment import Environment
 from time import time, sleep
 
-EPISODES = 10000
+EPISODES = 40000
 DISCOUNT = 0.9
-LEARNING_RATE = 0.9
+LEARNING_RATE = 0.4
+EPSILON = 0.5
 
 q_table = np.zeros(shape = (3,3,3,3,3,3,3,3,3,9))
 
@@ -14,9 +15,12 @@ for episode in range(EPISODES):
     done = False
     while not done:
         state = env.get_state()
-        possible_actions = env.get_possible_moves()
         while True:
-            action = np.argmax(q_table[state])
+            possible_actions = env.get_possible_moves()
+            if np.random.random() > EPSILON:
+                action = np.argmax(q_table[state])
+            else:
+                action = np.random.randint(0,9)
             if action not in possible_actions:
                 q_table[state + (action,)] = -10
             else:
