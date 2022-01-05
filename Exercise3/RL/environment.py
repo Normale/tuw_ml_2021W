@@ -1,20 +1,11 @@
 import numpy as np
 from typing import Tuple, List
-import random
-
-
-class RandomPlayer:
-    def __init__(self, player_id: int):
-        self.player_id = player_id
-
-    def decide_action(self, actions: List[int]):
-        return random.choice(actions)
 
 
 class Environment:
-    def __init__(self, win_reward, lose_reward, draw_reward):
+    def __init__(self, win_reward, lose_reward, draw_reward, enemy):
         self.board = np.zeros(9, dtype=np.uint8)
-        self.enemy = RandomPlayer(2)
+        self.enemy = enemy
         self.win_reward = win_reward
         self.lose_reward = lose_reward
         self.draw_reward = draw_reward
@@ -90,7 +81,7 @@ class Environment:
             return self.get_state(), self.draw_reward, True
 
         actions = self.get_possible_moves()
-        enemy_action = self.enemy.decide_action(actions)
+        enemy_action = self.enemy.decide_action(self.get_state(), actions)
         self.try_move(self.enemy.player_id, enemy_action)
 
         if self.is_winner(self.enemy.player_id):
