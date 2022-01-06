@@ -12,6 +12,7 @@ LEARNING_RATE = 0.7
 EPSILON = 0.9
 DISPLAY = True
 
+SHOW_ALIVE = 100
 
 
 graph_dir_name = "Graphs"
@@ -70,6 +71,8 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
         if DISPLAY:
             env.display()
         print(f"Episode {episode}, i {iteration} rand: {rand <= EPSILON} win?: {env.is_winner(1)}")
+        if episode % SHOW_ALIVE == 0: 
+            print(f"Episode {episode}, i {iteration} rand: {rand <= EPSILON} win?: {env.is_winner(1)}")
 
     x = range(EPISODES)
     plt.clf()
