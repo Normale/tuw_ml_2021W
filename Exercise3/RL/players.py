@@ -18,12 +18,18 @@ class RandomPlayer(Player):
 
 
 class QLPlayer(Player):
-    def __init__(self, player_id: int, q_table: np.array):
+    def __init__(self, player_id: int, q_table: np.ndarray):
         self.player_id = player_id
         self.q_table = q_table
 
     def decide_action(self, state: np.array, actions: List[int]):
-        return np.argmax(self.q_table[state])
+        while True:
+            action = np.argmax(self.q_table[state])
+            if action in actions:
+                break
+            else:
+                self.q_table[state + (action,)] = -10
+        return action
 
 
 if __name__ == '__main__':
