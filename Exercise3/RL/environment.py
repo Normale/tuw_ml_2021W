@@ -3,13 +3,16 @@ from typing import Tuple, List
 
 
 class Environment:
-    def __init__(self, win_reward, lose_reward, draw_reward, enemy):
+    def __init__(self, win_reward, lose_reward, draw_reward, enemy, env_first: bool = True):
         self.board = np.zeros(9, dtype=np.uint8)
         self.enemy = enemy
         self.win_reward = win_reward
         self.lose_reward = lose_reward
         self.draw_reward = draw_reward
-
+        if env_first:
+            actions = self.get_possible_moves()
+            enemy_action = self.enemy.decide_action(self.get_state(), actions)
+            self.try_move(self.enemy.player_id, enemy_action)
     def get_state(self):
         return tuple(self.board)
 
