@@ -97,11 +97,11 @@ class Environment:
         if not self.is_move_possible():
             return self.get_state(), self.draw_reward, True
         
-        reward = None
-        if action == 4:
-            reward = self.center_reward
-        elif action in [0,2,6,8]:
-            reward = self.corner_reward
-        else:
-            reward = self.normal_reward
+        reward = self.draw_reward
+        # if action == 4:
+        #     reward = self.center_reward
+        # elif action in [0,2,6,8]:
+        #     reward = self.corner_reward
+        # else:
+        #     reward = self.normal_reward
         return self.get_state(), reward, False
