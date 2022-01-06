@@ -6,10 +6,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 PLAYER_ID = 1
-EPISODES = 1000
+EPISODES = 2500
 DISCOUNT = 0.9
 LEARNING_RATE = 0.7
-EPSILON = 0.2
+EPSILON = 0.9
 DISPLAY = True
 
 
@@ -77,7 +77,7 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
     plt.plot(x, lose_percent, c='r')
     plt.plot(x, draw_percent, c='y')
 
-    plt.savefig(f"{save_path}/q_learning_e={EPISODES},i={iteration} en {enemy.get_player_name()}.png")
+    plt.savefig(f"{save_path}/q_learning_e={EPISODES},en {enemy.get_player_name()} i={iteration}.png")
     if qtable_path:
         np.save(qtable_path, q_table)
 
@@ -91,5 +91,6 @@ if __name__ == '__main__':
     ITERATIONS = 10
     for i in range(ITERATIONS):
         first = i % 2 == 0
-        teach_qlearning( first, QLPlayer(player_id=2, q_table=q_table), iteration=i, q_table=q_table, qtable_path = filepath)
-        teach_qlearning( first, QLPlayer(player_id=2, q_table=q_table), iteration=i, q_table=q_table, qtable_path = filepath)
+        teach_qlearning(first, RandomPlayer(player_id=2),iteration=i, qtable_path=filepath)
+        teach_qlearning(first, QLPlayer(player_id=2, q_table=q_table), iteration=i, q_table=q_table, qtable_path = filepath)
+        # teach_qlearning(first, ManualPlayer(player_id=2), iteration=i, q_table=q_table, qtable_path = filepath)
