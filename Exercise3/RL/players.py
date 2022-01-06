@@ -2,18 +2,33 @@ import random
 import numpy as np
 from typing import List
 
-class RandomPlayer:
+
+class Player:
     def __init__(self, player_id: int):
         self.player_id = player_id
+
+    def get_player_name(self):
+        return self.__class__.__name__
+
+class RandomPlayer(Player):
+
 
     def decide_action(self, state: np.array, actions: List[int]):
         return random.choice(actions)
 
 
-class QLPlayer:
+class QLPlayer(Player):
     def __init__(self, player_id: int, q_table: np.array):
         self.player_id = player_id
         self.q_table = q_table
 
     def decide_action(self, state: np.array, actions: List[int]):
         return np.argmax(self.q_table[state])
+
+
+if __name__ == '__main__':
+    p1 = Player(1)
+    p2 = RandomPlayer(2)
+    q_table = np.load(r"Exercise3\qtables\qtable-e=100000.npy")
+    p3 = QLPlayer(1, q_table)
+    print(p1.get_player_name(),p2.get_player_name(),p3.get_player_name())
