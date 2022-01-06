@@ -13,6 +13,7 @@ class Environment:
             actions = self.get_possible_moves()
             enemy_action = self.enemy.decide_action(self.get_state(), actions)
             self.try_move(self.enemy.player_id, enemy_action)
+            
     def get_state(self):
         return tuple(self.board)
 
