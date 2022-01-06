@@ -1,17 +1,18 @@
 import numpy as np
 from .environment import Environment
-from .players import RandomPlayer, QLPlayer
+from .players import ManualPlayer, RandomPlayer, QLPlayer
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 
 filepath = r"Exercise3\qtables\qtable.npy"
 
-EPISODES = 10000
+EPISODES = 3
 
 
 rand_player = RandomPlayer(2)
 ql_player = QLPlayer(1, np.load(filepath))
+manual = ManualPlayer(2)
 
 draw_win_lose = [0, 0, 0]
 win_percent = []
@@ -19,7 +20,7 @@ draw_percent = []
 lose_percent = []
 
 for episode in range(EPISODES):
-    env = Environment(1, 0, -1, rand_player, env_first=True)
+    env = Environment(1, 0, -1, manual, env_first=True)
     done = False
     while not done:
         state = env.get_state()

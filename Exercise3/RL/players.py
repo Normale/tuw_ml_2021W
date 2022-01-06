@@ -31,6 +31,23 @@ class QLPlayer(Player):
                 self.q_table[state + (action,)] = -10
         return action
 
+class ManualPlayer(Player):
+    def __init__(self, player_id: int):
+        self.player_id = player_id
+        print(f"You are {self.player_id}")
+
+    def decide_action(self, state: np.array, actions: List[int]):
+        print('----')
+        while True:
+            for x in np.split(np.array(state), 3):
+                print(x)
+            print("Possible actions", actions)
+            action = int(input("Which move to make?: "))
+            if action not in actions:
+                print("try again")
+            else:
+                break
+        return action
 
 if __name__ == '__main__':
     p1 = Player(1)
