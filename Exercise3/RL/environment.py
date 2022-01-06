@@ -9,11 +9,14 @@ class Environment:
         self.win_reward = win_reward
         self.lose_reward = lose_reward
         self.draw_reward = draw_reward
+        self.corner_reward = 0.08
+        self.center_reward = 0.12
+        self.normal_reward = 0.04
         if env_first:
             actions = self.get_possible_moves()
             enemy_action = self.enemy.decide_action(self.get_state(), actions)
             self.try_move(self.enemy.player_id, enemy_action)
-            
+
     def get_state(self):
         return tuple(self.board)
 
@@ -93,5 +96,12 @@ class Environment:
 
         if not self.is_move_possible():
             return self.get_state(), self.draw_reward, True
-
-        return self.get_state(), self.draw_reward, False
+        
+        reward = None
+        if action == 4:
+            reward = self.center_reward
+        elif action in [0,2,6,8]:
+            reward = self.corner_reward
+        else:
+            reward = self.normal_reward
+        return self.get_state(), reward, False
