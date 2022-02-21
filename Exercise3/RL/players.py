@@ -34,7 +34,7 @@ class QLPlayer(Player):
 class ManualPlayer(Player):
     def __init__(self, player_id: int):
         self.player_id = player_id
-        print(f"You are {self.player_id}")
+        print(f"Manual player is {self.player_id}")
 
     def decide_action(self, state: np.array, actions: List[int]):
         print('----')
