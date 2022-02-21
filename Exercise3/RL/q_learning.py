@@ -4,14 +4,12 @@ from .players import *
 from time import time, sleep
 from pathlib import Path
 import matplotlib.pyplot as plt
+import math 
 
 PLAYER_ID = 1
-EPISODES = 2500
+EPISODES = 1000
 DISCOUNT = 0.9
 LEARNING_RATE = 0.7
-EPSILON = 0.9
-DISPLAY = True
-
 EPS_START = 0.9
 EPS_END = 0.05
 EPS_DECAY = 200
@@ -76,7 +74,6 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
         draw_percent.append(draw_win_lose[0] / (episode+1))
         if DISPLAY:
             env.display()
-        print(f"Episode {episode}, i {iteration} rand: {rand <= EPSILON} win?: {env.is_winner(1)}")
         if episode % SHOW_ALIVE == 0: 
             print(f"Episode {episode}, i {iteration} rand: {rand <= EPSILON} win?: {env.is_winner(1)}")
 
@@ -85,7 +82,10 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
     plt.plot(x, win_percent, c='g')
     plt.plot(x, lose_percent, c='r')
     plt.plot(x, draw_percent, c='y')
-
+    plt.title(f"Iteration {iteration}")
+    plt.ylabel('%')
+    plt.xlabel('episodes')
+    plt.legend(['win', 'lose', 'draw'])
     plt.savefig(f"{save_path}/q_learning_e={EPISODES},en {enemy.get_player_name()} i={iteration}.png")
     if qtable_path:
         np.save(qtable_path, q_table)
@@ -95,11 +95,11 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
 
 if __name__ == '__main__':
     filepath = r"Exercise3\qtables\qtable.npy"
-    teach_qlearning(True, RandomPlayer(player_id=2), qtable_path=filepath)
-    q_table = np.load(filepath)
+    # teach_qlearning(True, RandomPlayer(player_id=2), qtable_path=filepath)
+    # q_table = np.load(filepath)
     ITERATIONS = 10
     for i in range(ITERATIONS):
         first = i % 2 == 0
         teach_qlearning(first, RandomPlayer(player_id=2),iteration=i, qtable_path=filepath)
-        teach_qlearning(first, QLPlayer(player_id=2, q_table=q_table), iteration=i, q_table=q_table, qtable_path = filepath)
+        # teach_qlearning(first, QLPlayer(player_id=2, q_table=q_table), iteration=i, q_table=q_table, qtable_path = filepath)
         # teach_qlearning(first, ManualPlayer(player_id=2), iteration=i, q_table=q_table, qtable_path = filepath)
