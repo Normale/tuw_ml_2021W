@@ -12,6 +12,10 @@ LEARNING_RATE = 0.7
 EPSILON = 0.9
 DISPLAY = True
 
+EPS_START = 0.9
+EPS_END = 0.05
+EPS_DECAY = 200
+DISPLAY = False
 SHOW_ALIVE = 100
 
 
@@ -46,6 +50,8 @@ def teach_qlearning(go_first: bool, enemy: Player, iteration: int = 0, q_table =
             while True:
                 possible_actions = env.get_possible_moves()
                 rand = np.random.random()
+                EPSILON = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * iteration * 100 / EPS_DECAY)
+                print(f"{iteration=} - {EPSILON=}")
                 if rand > EPSILON:
                     action = np.argmax(q_table[state])
                 else:
