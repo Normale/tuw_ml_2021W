@@ -16,7 +16,7 @@ class Environment:
             actions = self.get_possible_moves()
             enemy_action = self.enemy.decide_action(self.get_state(), actions)
             self.try_move(self.enemy.player_id, enemy_action)
-            
+
     def reset(self):
         self.board = np.zeros(9, dtype=np.uint8)
         if self.env_first:
@@ -85,8 +85,8 @@ class Environment:
         returns [state, reward, done]
         '''
         if not self.try_move(player_id, action):
-            ULTRA_PUNISHMENT_LMAO = -100
-            return [None, ULTRA_PUNISHMENT_LMAO, True]
+            ULTRA_PUNISHMENT = -100
+            return [None, ULTRA_PUNISHMENT, True]
 
         if self.is_winner(player_id):
             return self.get_state(), self.win_reward, True
