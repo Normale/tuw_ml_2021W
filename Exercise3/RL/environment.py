@@ -85,8 +85,8 @@ class Environment:
         returns [state, reward, done]
         '''
         if not self.try_move(player_id, action):
-            ULTRA_PUNISHMENT_LMAO = -100
-            return [None, ULTRA_PUNISHMENT_LMAO, True]
+            ULTRA_PUNISHMENT = -100
+            return [None, ULTRA_PUNISHMENT, True]
 
         if self.is_winner(player_id):
             return self.get_state(), self.win_reward, True
